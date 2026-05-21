@@ -328,7 +328,7 @@
                         secMod: 30,
                         riskMod: -20,
                         title: "အလွန်မြော်အမြင်ရှိပါသည်!",
-                        explanation: "အရေးကြီးဒေတာများကို သိမ်းဆည်းရာတွင် ဖိုင်အမည်ပြောင်းရုံဖြင့် သာမန်စစ်ဆေးသူများကိုပင် မလှည့်စားနိုင်ပါ။ ဒေတာလုံခြုံရေး၏ အဓိကသော့ချက်မှာ စစ်ဘက်သုံးအဆင့် ကုဒ်ဝှက်စနစ် (Encryption) ဖြင့် ကာကွယ်ထားခြင်း ဖြစ်သည်။",
+                        explanation: "အရေးကြီးဒေတာများကို သိမ်းဆည်းရာတွင် ဖိုင်အမည်ပြောင်းရုံဖြင့် သာမန်စစ်ဆေးသူများကိုပင် မလှည့်စားနိုင်ပါ။ ဒေတာလုံုံခြုံရေး၏ အဓိကသော့ချက်မှာ စစ်ဘက်သုံးအဆင့် ကုဒ်ဝှက်စနစ် (Encryption) ဖြင့် ကာကွယ်ထားခြင်း ဖြစ်သည်။",
                         sound: "success",
                         advice: "သတင်းအချက်အလက်များကို ကုဒ်ဝှက်သိမ်းဆည်းခြင်းနှင့် Metadata ဖျက်ဆီးခြင်းဗျူဟာကို ဆက်လက်ကျင့်သုံးပါ။"
                     },
@@ -486,7 +486,7 @@
                         secMod: 5,
                         riskMod: 15,
                         title: "သတိပြုရန် လိုအပ်ပါသည်!",
-                        explanation: "စာသားထဲတွင် တည်နေရာမထည့်သော်လည်း ဓာတ်ပုံ၏ EXIF data (Metadata) သို့မဟုတ် နောက်ခံမြင်ကွင်းများကို အသေးစိတ်ဆန်းစစ်ပြီး သင့်တည်နေရာကို စောင့်ကြည့်သူများက ခြေရာခံမိသွားနိုင်ပါသည်။",
+                        explanation: "စာသားထဲတွင် တည်နေရာမရေးသော်လည်း ဓာတ်ပုံနောက်ခံနှင့် EXIF metadata တို့မှ ခြေရာခံနိုင်သဖြင့် ဓာတ်ပုံမတင်မီ အမြဲသန့်စင်ပါ။",
                         sound: "danger",
                         advice: "စာသားထဲတွင် တည်နေရာမရေးသော်လည်း ဓာတ်ပုံနောက်ခံနှင့် EXIF metadata တို့မှ ခြေရာခံနိုင်သဖြင့် ဓာတ်ပုံမတင်မီ အမြဲသန့်စင်ပါ။"
                     }
@@ -531,7 +531,7 @@
                 id: 7,
                 category: "App Permissions (ခွင့်ပြုချက်များ)",
                 icon: "fa-solid fa-mobile-screen",
-                description: "မြေပြင်သတင်းများ အော့ဖ်လိုင်းဖတ်ရှုနိုင်ဖို့ စာဖတ်အက်ပ် (PDF Reader) အသစ်တစ်ခုကို ယုံကြည်ရတဲ့ Community Portal ကနေ ဒေါင်းလုဒ်လုပ်လိုက်ပါတယ်။ ဒါပေမဲ့ အက်ပ်က ဖုန်းခေါ်ဆိုမှုမှတ်တမ်း၊ ကင်မရာနဲ့ တည်နေရာ (GPS) သုံးစွဲခွင့်တွေကို ချက်ချင်းတောင်းခံလာပါတယ်။ သင် ဘာလုပ်မလဲ။",
+                description: "မြေပြင်သတင်းများ အော့ဖ်လိုင်းဖတ်ရှုနိုင်ဖို့ စစာဖတ်အက်ပ် (PDF Reader) အသစ်တစ်ခုကို ယုံကြည်ရတဲ့ Community Portal ကနေ ဒေါင်းလုဒ်လုပ်လိုက်ပါတယ်။ ဒါပေမဲ့ အက်ပ်က ဖုန်းခေါ်ဆိုမှုမှတ်တမ်း၊ ကင်မရာနဲ့ တည်နေရာ (GPS) သုံးစွဲခွင့်တွေကို ချက်ချင်းတောင်းခံလာပါတယ်။ သင် ဘာလုပ်မလဲ။",
                 choices: [
                     {
                         text: "ခွင့်ပြုချက်များကို စစ်ဆေးပြီး အက်ပ်လုပ်ဆောင်ချက်နှင့် မသက်ဆိုင်သည့် ကင်မရာ၊ မိုက်ကရိုဖုန်းနှင့် တည်နေရာတောင်းခံမှုများကို 'Deny' ငြင်းပယ်မည်။",
@@ -677,6 +677,7 @@
         let currentShuffledChoices = []; // Store dynamically shuffled choices for the active question
         let stepResults = []; // Track correct (true) or incorrect (false) for each level 1-10
         let playedQuests = []; // Track actual questions played and player selected choices for Dynamic Action Plan
+        let choiceLocked = false; // Flag to prevent changing answer or double clicking once chosen
 
         // Shuffle utility (Fisher-Yates) and select ALL 10 quests randomized for complete game loop
         function setupGameQuests() {
@@ -748,6 +749,7 @@
             currentQuestIndex = 0;
             securityHealth = 50;
             riskExposure = 30;
+            choiceLocked = false;
             updateMeters();
             
             document.getElementById('screen-welcome').classList.add('hidden');
@@ -757,6 +759,7 @@
 
         // Render current quest elements dynamically
         function renderQuest() {
+            choiceLocked = false; // Reset lock state for the new level
             renderStepTracker();
             const currentQuest = activeQuests[currentQuestIndex];
             
@@ -799,6 +802,10 @@
 
         // Handle interactive choice selection based on dynamic index
         function makeChoice(shuffledIndex) {
+            // Guard clause: If an answer is already selected, prevent any subsequent click actions
+            if (choiceLocked) return;
+            choiceLocked = true; // Lock immediately to prevent changing or double clicking
+
             const choice = currentShuffledChoices[shuffledIndex];
 
             // Apply modifiers
@@ -907,6 +914,7 @@
             currentQuestIndex = 0;
             securityHealth = 50;
             riskExposure = 30;
+            choiceLocked = false;
             updateMeters();
             
             document.getElementById('screen-result').classList.add('hidden');
