@@ -3,1013 +3,835 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Be Safe - HRD Digital Security Game</title>
-    <!-- Tailwind CSS for high fidelity premium layout -->
+    <title>HRD Tactical Digital Security Simulator v2.2</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome for icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Merriweather:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
-    
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['DM Sans', 'sans-serif'],
-                        serif: ['Merriweather', 'serif'],
-                    },
-                    colors: {
-                        cream: '#F3F0DF',
-                        navy: {
-                            DEFAULT: '#005088',
-                            dark: '#003c66',
-                            light: '#e6f0f7'
-                        },
-                        mint: {
-                            DEFAULT: '#11CAA0',
-                            dark: '#0da180',
-                            light: '#e7faf6'
-                        }
-                    }
-                }
-            }
-        }
-    </script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        .custom-scroll::-webkit-scrollbar {
-            width: 6px;
+        @import url('https://fonts.googleapis.com/css2?family=Padauk:wght@400;700&display=swap');
+        
+        body {
+            font-family: 'Padauk', sans-serif;
+            background-color: #0b0f1a;
+            background-image: 
+                radial-gradient(circle at 50% 0%, rgba(20, 184, 166, 0.15) 0%, transparent 50%),
+                linear-gradient(rgba(20, 184, 166, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(20, 184, 166, 0.05) 1px, transparent 1px);
+            background-size: 100% 100%, 30px 30px, 30px 30px;
         }
-        .custom-scroll::-webkit-scrollbar-track {
-            background: #f1f1f1;
+
+        .neon-glow {
+            box-shadow: 0 0 15px rgba(20, 184, 166, 0.4);
+            border: 1px solid rgba(20, 184, 166, 0.6);
         }
-        .custom-scroll::-webkit-scrollbar-thumb {
-            background: #005088;
-            border-radius: 4px;
-        }
-        @keyframes pulse-ring {
-            0% { transform: scale(0.95); opacity: 1; }
-            50% { transform: scale(1.1); opacity: 0.5; }
-            100% { transform: scale(0.95); opacity: 1; }
-        }
-        .active-pulse {
-            position: relative;
-        }
-        .active-pulse::after {
-            content: '';
-            position: absolute;
-            inset: -4px;
-            border: 2px solid #11CAA0;
-            border-radius: 9999px;
-            animation: pulse-ring 2s infinite ease-in-out;
-        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: #0b0f1a; }
+        ::-webkit-scrollbar-thumb { background: #14b8a6; border-radius: 10px; }
+
+        .animate-pulse-slow { animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-fade { animation: fadeIn 0.4s ease-out forwards; }
     </style>
 </head>
-<body class="bg-slate-900 font-sans min-h-screen flex items-center justify-center p-2 sm:p-6 transition-all duration-300">
+<body class="text-slate-200 min-h-screen flex flex-col justify-between">
 
-    <!-- Primary Game Wrapper Container -->
-    <div class="w-full max-w-4xl bg-cream rounded-2xl shadow-2xl overflow-hidden border border-navy/10 relative flex flex-col min-h-[680px]">
-        
-        <!-- TOP NAVIGATION BAR -->
-        <header class="bg-navy text-cream px-6 py-4 flex flex-col sm:flex-row justify-between items-center border-b-4 border-mint gap-3">
-            <div class="flex items-center gap-3">
-                <div class="bg-mint text-navy p-2.5 rounded-xl font-bold shadow-lg shadow-mint/10">
-                    <i class="fa-solid fa-user-shield text-2xl"></i>
+    <!-- TOP NAVIGATION / STATUS BAR -->
+    <nav class="border-b border-teal-500/20 bg-slate-900/60 backdrop-blur-lg sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="p-2 bg-teal-950 border border-teal-500 rounded-md animate-pulse-slow">
+                    <i class="fa-solid fa-shield-halved text-teal-400"></i>
                 </div>
                 <div>
-                    <h1 class="font-serif font-bold text-3xl tracking-tight text-white">Be Safe</h1>
-                    <p class="text-xs text-cream/70">လူ့အခွင့်အရေးကာကွယ်စောင့်ရှောက်သူများအတွက် ဒီဂျစ်တယ်ကြံ့ကြံ့ခံနိုင်စွမ်းမြှင့်တင်ရေး</p>
+                    <h1 class="text-sm font-bold text-teal-400 tracking-tighter uppercase">Tactical Defender v2.2</h1>
+                    <p class="text-[10px] text-slate-500">Security Assessment & Response Lab</p>
                 </div>
             </div>
-            <div class="flex items-center gap-4 text-sm font-semibold">
-                <span id="level-indicator" class="bg-navy-dark/80 px-4 py-2 rounded-full border border-mint/20 text-mint font-bold tracking-wider">
-                    အဆင့်: 1 / 10
-                </span>
-            </div>
-        </header>
 
-        <!-- STEP TRACKER INDICATOR (10 LEVELS MAP) -->
-        <div class="bg-[#e8e5d3] px-6 py-4 border-b border-navy/10 flex items-center justify-between gap-2 overflow-x-auto custom-scroll">
-            <span class="text-xs font-bold text-navy/60 uppercase tracking-wider flex-shrink-0 mr-2"><i class="fa-solid fa-map-location-dot mr-1"></i> ခရီးစဉ်</span>
-            <div class="flex items-center justify-between flex-grow max-w-2xl mx-auto gap-1 sm:gap-2">
-                <!-- 10 Step Dots will be generated dynamically -->
-                <div id="step-dots-container" class="flex items-center justify-between w-full"></div>
-            </div>
-        </div>
-
-        <!-- STATUS BAR (SECURITY HEALTH & RISK EXPOSURE) -->
-        <div class="bg-navy-light px-6 py-4 border-b border-navy/10 grid grid-cols-1 md:grid-cols-2 gap-4">
-            <!-- Security Meter -->
-            <div>
-                <div class="flex justify-between items-center mb-1 text-xs sm:text-sm font-bold text-navy">
-                    <span><i class="fa-solid fa-shield-halved mr-1"></i> လုံခြုံရေး အခြေအနေ (Security Health)</span>
-                    <span id="security-percentage" class="text-mint-dark font-bold">50%</span>
+            <div class="flex items-center space-x-6">
+                <div class="flex flex-col items-end">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-32 h-1.5 bg-slate-800 rounded-full overflow-hidden border border-teal-900/50">
+                            <div id="global-progress" class="bg-teal-500 h-full transition-all duration-700" style="width: 10%"></div>
+                        </div>
+                        <span id="progress-text" class="text-[10px] font-mono text-teal-400">10%</span>
+                    </div>
+                    <span class="text-[9px] text-slate-500 uppercase">Operational Readiness</span>
                 </div>
-                <div class="w-full bg-slate-200 rounded-full h-3.5 overflow-hidden border border-navy/10 shadow-inner">
-                    <div id="security-bar" class="bg-mint h-full transition-all duration-500 rounded-full shadow-lg" style="width: 50%"></div>
-                </div>
-            </div>
-            <!-- Data Exposure Meter -->
-            <div>
-                <div class="flex justify-between items-center mb-1 text-xs sm:text-sm font-bold text-red-700">
-                    <span><i class="fa-solid fa-triangle-exclamation mr-1"></i> ဒေတာ ပေါက်ကြားမှုအန္တရာယ် (Risk Exposure)</span>
-                    <span id="risk-percentage" class="text-red-600 font-bold">30%</span>
-                </div>
-                <div class="w-full bg-slate-200 rounded-full h-3.5 overflow-hidden border border-red-200 shadow-inner">
-                    <div id="risk-bar" class="bg-red-500 h-full transition-all duration-500 rounded-full shadow-lg" style="width: 30%"></div>
+                <div class="bg-teal-950/40 border border-teal-500/20 px-3 py-1 rounded text-center">
+                    <span class="text-[9px] text-slate-500 block uppercase">Rank Score</span>
+                    <span id="global-score" class="text-xs font-bold text-teal-400">000</span>
                 </div>
             </div>
         </div>
+    </nav>
 
-        <!-- MAIN INTERACTIVE SCREENS AREA -->
-        <main class="flex-grow p-6 flex flex-col justify-between" id="game-main-area">
-            
-            <!-- SCREEN 1: WELCOME / START SCREEN -->
-            <div id="screen-welcome" class="flex flex-col items-center justify-center text-center my-auto py-8">
-                <div class="w-28 h-28 bg-navy-light rounded-full flex items-center justify-center mb-6 border-2 border-mint text-navy shadow-lg shadow-navy/5 relative active-pulse">
-                    <i class="fa-solid fa-shield text-6xl text-navy"></i>
-                </div>
-                <h2 class="font-serif font-bold text-3xl sm:text-4xl text-navy mb-4">ဒီဂျစ်တယ် မြေပြင်စိန်ခေါ်မှုများအား တုံ့ပြန်ပါ</h2>
-                <p class="text-gray-700 max-w-xl leading-relaxed mb-8 text-base sm:text-lg">
-                    "လုံခြုံရေးဆိုတာ ဝယ်ယူလို့ရတဲ့ ပစ္စည်းမဟုတ်ဘူး၊ နေ့စဉ်ကျင့်သုံးရမယ့် အလေ့အကျင့်ဖြစ်တယ်။" သင့်အဖွဲ့အစည်းနှင့် မြေပြင်အချက်အလက်များကို ဘေးကင်းလုံခြုံအောင် ထိန်းသိမ်းနိုင်မည့် ကာကွယ်ရေးဗျူဟာများအား အဆင့် ၁၀ ဆင့်ဖြင့် စတင်စမ်းသပ်လိုက်ပါ။
-                </p>
-                <button onclick="startGame()" class="bg-mint hover:bg-mint-dark text-navy hover:text-white font-bold text-lg px-10 py-5 rounded-2xl shadow-xl hover:shadow-mint/20 transition-all transform hover:-translate-y-1 active:translate-y-0 flex items-center gap-2">
-                    <i class="fa-solid fa-play"></i> ဂိမ်းစတင်မည်
-                </button>
-            </div>
+    <!-- ALERT CONTAINER -->
+    <div id="alert-container" class="fixed top-20 right-4 z-[100] space-y-2 pointer-events-auto"></div>
 
-            <!-- SCREEN 2: ACTIVE QUEST SCREEN -->
-            <div id="screen-quest" class="hidden flex flex-col md:grid md:grid-cols-12 gap-6 my-auto animate-fade-in">
-                <!-- Left panel: Visual Graphic & Text Narrative -->
-                <div class="md:col-span-7 flex flex-col justify-center">
-                    <div class="bg-white rounded-2xl p-5 shadow-md border border-navy/5 flex items-center gap-4 mb-4">
-                        <div id="quest-icon" class="text-navy text-4xl w-16 h-16 bg-navy-light rounded-2xl flex items-center justify-center flex-shrink-0 shadow-inner">
-                            <i class="fa-solid fa-route"></i>
-                        </div>
-                        <div>
-                            <span class="text-xs font-semibold text-mint-dark uppercase tracking-wider bg-mint-light px-3 py-1.5 rounded-lg border border-mint/10">အန္တရာယ်အမျိုးအစား</span>
-                            <h3 id="quest-category" class="font-bold text-navy text-lg mt-1.5">Threat Modeling</h3>
-                        </div>
-                    </div>
-                    
-                    <div class="bg-white rounded-2xl p-6 shadow-md border border-navy/5 min-h-[220px] flex flex-col justify-between">
-                        <p id="quest-description" class="text-gray-800 leading-relaxed text-base sm:text-lg font-medium">
-                            ဇာတ်ကြောင်း ရှင်းလင်းချက်များ ဤနေရာတွင် ပေါ်လာပါမည်။
-                        </p>
-                    </div>
-                </div>
+    <!-- MAIN SIMULATOR AREA -->
+    <main class="flex-grow max-w-6xl w-full mx-auto p-4 flex flex-col justify-center">
 
-                <!-- Right panel: Interactive Action Choices (Generated Dynamically) -->
-                <div class="md:col-span-5 flex flex-col justify-center gap-4">
-                    <h4 class="text-xs font-bold text-navy/60 uppercase tracking-wider mb-1 flex items-center gap-1.5"><i class="fa-solid fa-circle-play text-mint"></i> သင်မည်သို့ ဆုံးဖြတ်မည်နည်း?</h4>
-                    <div id="choices-container" class="flex flex-col gap-3">
-                        <!-- Shuffled Buttons will be rendered here -->
-                    </div>
-                </div>
-            </div>
-
-            <!-- SCREEN 3: FEEDBACK OVERLAY CARD -->
-            <div id="screen-feedback" class="hidden flex flex-col items-center justify-center text-center my-auto max-w-xl mx-auto py-6 animate-fade-in">
-                <div id="feedback-badge" class="w-24 h-24 rounded-full flex items-center justify-center mb-6 text-5xl shadow-xl">
-                    <i class="fa-solid fa-check"></i>
-                </div>
-                <h3 id="feedback-title" class="font-serif font-bold text-3xl text-navy mb-3">မှန်ကန်သော ဆုံးဖြတ်ချက်။</h3>
-                <p id="feedback-explanation" class="text-gray-700 leading-relaxed mb-6 text-base sm:text-lg">
-                    ရှင်းလင်းချက်များ...
-                </p>
-                <div class="bg-white rounded-xl p-4 border border-navy/5 w-full flex justify-around mb-8 text-sm font-bold shadow-md">
-                    <span id="feedback-stat-sec" class="text-mint-dark text-base">လုံခြုံရေး +20%</span>
-                    <span id="feedback-stat-risk" class="text-red-600 text-base">ဒေတာအန္တရာယ် -10%</span>
-                </div>
-                <button onclick="nextQuest()" class="bg-navy hover:bg-navy-dark text-cream hover:text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition-all flex items-center gap-2">
-                    နောက်တစ်ဆင့်သို့ <i class="fa-solid fa-arrow-right"></i>
-                </button>
-            </div>
-
-            <!-- SCREEN 4: GAME OVER / RESULT ASSESSMENT -->
-            <div id="screen-result" class="hidden flex flex-col items-center my-auto py-4 animate-fade-in">
-                <div id="result-trophy" class="w-24 h-24 rounded-full flex items-center justify-center mb-6 text-5xl shadow-xl">
-                    <i class="fa-solid fa-trophy"></i>
-                </div>
-                <h2 class="font-serif font-bold text-3xl sm:text-4xl text-navy mb-2">ရှင်သန်မှုရလဒ် သုံးသပ်ချက်</h2>
-                <p id="result-evaluation" class="text-gray-700 text-center max-w-lg mb-6 leading-relaxed text-sm sm:text-base">
-                    ရလဒ်သုံးသပ်ချက်စာသား ပေါ်လာမည်။
-                </p>
-
-                <!-- Stats Summary -->
-                <div class="grid grid-cols-2 gap-4 w-full max-w-md mb-8">
-                    <div class="bg-white p-5 rounded-2xl border border-navy/5 text-center shadow-md">
-                        <span class="text-xs font-bold text-gray-500 uppercase tracking-wider">လုံခြုံရေးအဆင့်</span>
-                        <div id="final-security" class="text-4xl font-bold text-mint-dark mt-1">80%</div>
-                    </div>
-                    <div class="bg-white p-5 rounded-2xl border border-navy/5 text-center shadow-md">
-                        <span class="text-xs font-bold text-gray-500 uppercase tracking-wider">ကျန်ရှိသောအန္တရာယ်</span>
-                        <div id="final-risk" class="text-4xl font-bold text-red-600 mt-1">10%</div>
-                    </div>
-                </div>
-
-                <!-- Strategic Action Recommendation Card -->
-                <div class="bg-white border-l-4 border-mint p-5 rounded-r-2xl shadow-md max-w-xl mb-8">
-                    <h4 class="font-bold text-navy flex items-center gap-2 mb-2">
-                        <i class="fa-solid fa-circle-exclamation text-mint text-lg"></i> ချက်ချင်းအကောင်အထည်ဖော်ရန် ဒီဂျစ်တယ် လုံခြုံရေး အကြံပြုချက်
-                    </h4>
-                    <p id="result-recommendation" class="text-sm text-gray-600 leading-relaxed">
-                        အကြံပြုချက်များ...
+        <!-- STAGE 0: BRIEFING -->
+        <section id="stage-0" class="stage-section animate-fade">
+            <div class="max-w-2xl mx-auto bg-slate-900/80 border border-teal-500/30 rounded-2xl p-8 neon-glow backdrop-blur-md">
+                <div class="text-center">
+                    <i class="fa-solid fa-tower-broadcast text-4xl text-teal-500 mb-4 animate-bounce"></i>
+                    <h2 class="text-2xl font-bold text-white mb-2">မစ်ရှင် စတင်ရန် ပြင်ဆင်ပါ</h2>
+                    <p class="text-sm text-slate-400 leading-relaxed">
+                        ဤစနစ်သည် HRD များအတွက် ဒစ်ဂျစ်တယ်ခြိမ်းခြောက်မှုများကို လက်တွေ့ဆန်းစစ်ပြီး 
+                        အရေးပေါ်အခြေအနေတွင် စက္ကန့်ပိုင်းအတွင်း တုံ့ပြန်နိုင်စေရန် တည်ဆောက်ထားသော Simulator ဖြစ်သည်။
                     </p>
                 </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8">
+                    <div class="bg-slate-950/50 border border-slate-800 p-4 rounded-xl flex items-center space-x-3">
+                        <i class="fa-solid fa-list-check text-teal-500 text-lg"></i>
+                        <span class="text-xs">၉ မျိုးသော ခြိမ်းခြောက်မှု ဆန်းစစ်ခြင်း</span>
+                    </div>
+                    <div class="bg-slate-950/50 border border-slate-800 p-4 rounded-xl flex items-center space-x-3">
+                        <i class="fa-solid fa-file-export text-teal-500 text-lg"></i>
+                        <span class="text-xs">ကိုယ်ပိုင် Manual Playbook ထုတ်ယူခြင်း</span>
+                    </div>
+                </div>
+                <button onclick="nextStage(1)" class="w-full mt-8 bg-teal-600 hover:bg-teal-500 text-white font-bold py-3 rounded-xl transition-all shadow-lg shadow-teal-600/20 uppercase tracking-widest text-sm">
+                    Simulator စတင်မည် <i class="fa-solid fa-chevron-right ml-2"></i>
+                </button>
+            </div>
+        </section>
 
-                <div class="flex flex-col sm:flex-row gap-4 w-full justify-center">
-                    <button onclick="resetGame()" class="bg-navy hover:bg-navy-dark text-cream hover:text-white font-bold px-8 py-4 rounded-xl transition-all flex items-center justify-center gap-2 shadow-lg">
-                        <i class="fa-solid fa-rotate-left"></i> ပြန်လည်ကစားမည်
-                    </button>
-                    <button onclick="showActionPlanPopup()" class="bg-mint hover:bg-mint-dark text-navy hover:text-white font-bold px-8 py-4 rounded-xl transition-all flex items-center justify-center gap-2 shadow-lg shadow-mint/10">
-                        <i class="fa-solid fa-file-invoice"></i> Safety Action Plan ရယူမည်
-                    </button>
+        <!-- STAGE 1: THREAT ASSESSMENT (9 ITEMS) -->
+        <section id="stage-1" class="stage-section hidden animate-fade">
+            <div class="bg-slate-900/80 border border-teal-500/30 rounded-2xl p-6 neon-glow backdrop-blur-md">
+                <div class="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-2">
+                    <div>
+                        <h2 class="text-xl font-bold text-teal-400">အဆင့် (၁) - ခြိမ်းခြောက်မှု မက်ထရစ်</h2>
+                        <p class="text-xs text-slate-500">အောက်ပါအန္တရာယ်များကို သက်ဆိုင်ရာ ကဏ္ဍအလိုက် (၉) ခုလုံး မှန်ကန်စွာ ခွဲခြားပါ။</p>
+                    </div>
+                    <div class="text-xs font-mono bg-teal-950 px-3 py-1 rounded border border-teal-500/30">
+                        Pending: <span id="s1-count">0</span> / 9
+                    </div>
+                </div>
+
+                <!-- CATEGORY BOXES -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                    <!-- Devices -->
+                    <div id="drop-devices" class="bg-slate-950/80 border border-slate-800 rounded-xl p-4 min-h-[180px] transition-all">
+                        <div class="flex items-center space-x-2 text-teal-500 mb-3 border-b border-slate-800 pb-2">
+                            <i class="fa-solid fa-mobile-screen"></i>
+                            <span class="text-xs font-bold uppercase">စက်ပစ္စည်း (Devices)</span>
+                        </div>
+                        <div class="flex flex-wrap gap-2" id="list-devices"></div>
+                    </div>
+                    <!-- Data -->
+                    <div id="drop-data" class="bg-slate-950/80 border border-slate-800 rounded-xl p-4 min-h-[180px] transition-all">
+                        <div class="flex items-center space-x-2 text-amber-500 mb-3 border-b border-slate-800 pb-2">
+                            <i class="fa-solid fa-database"></i>
+                            <span class="text-xs font-bold uppercase">အချက်အလက် (Data)</span>
+                        </div>
+                        <div class="flex flex-wrap gap-2" id="list-data"></div>
+                    </div>
+                    <!-- Comms -->
+                    <div id="drop-comms" class="bg-slate-950/80 border border-slate-800 rounded-xl p-4 min-h-[180px] transition-all">
+                        <div class="flex items-center space-x-2 text-blue-500 mb-3 border-b border-slate-800 pb-2">
+                            <i class="fa-solid fa-wifi"></i>
+                            <span class="text-xs font-bold uppercase">ဆက်သွယ်ရေး (Comms)</span>
+                        </div>
+                        <div class="flex flex-wrap gap-2" id="list-comms"></div>
+                    </div>
+                </div>
+
+                <!-- THREAT CARDS POOL -->
+                <div id="threat-pool" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 overflow-y-auto max-h-[300px] p-1">
+                    <!-- Injected via JS -->
+                </div>
+
+                <div class="flex justify-between mt-8 pt-4 border-t border-slate-800">
+                    <button onclick="resetStage1()" class="text-xs text-slate-500 hover:text-slate-300"><i class="fa-solid fa-rotate-left mr-1"></i> ပြန်စမည်</button>
+                    <button onclick="validateStage1()" class="bg-teal-600 hover:bg-teal-500 px-8 py-2 rounded-lg text-sm font-bold">အတည်ပြုမည်</button>
                 </div>
             </div>
+        </section>
 
-        </main>
-
-        <!-- FOOTER / COPYRIGHT INFO -->
-        <footer class="bg-navy-dark text-cream/50 text-center py-4 text-xs border-t border-navy/10 flex flex-col sm:flex-row justify-between items-center px-6 gap-2">
-            <span>© 2026 HRD Digital Security Safe Network</span>
-            <span>ဘေးကင်းလုံခြုံစွာဖြင့် လုပ်ငန်းများဆောင်ရွက်နိုင်ပါစေ</span>
-        </footer>
-
-    </div>
-
-    <!-- POPUP MODAL FOR ACTION PLAN -->
-    <div id="action-plan-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden animate-fade-in">
-        <div class="bg-white w-full max-w-2xl rounded-2xl shadow-2xl flex flex-col max-h-[90vh] overflow-hidden border border-navy/10">
-            <!-- Modal Header -->
-            <div class="bg-navy text-cream px-6 py-4 flex justify-between items-center border-b-4 border-mint">
-                <div class="flex items-center gap-2">
-                    <i class="fa-solid fa-clipboard-list text-mint text-xl"></i>
-                    <h3 class="font-serif font-bold text-xl text-white">Be Safe - ကိုယ်ပိုင်အရေးပေါ်အစီအမံ</h3>
+        <!-- STAGE 2: SECURITY PILLARS BUILDER -->
+        <section id="stage-2" class="stage-section hidden animate-fade">
+            <div class="bg-slate-900/90 border border-teal-500/30 rounded-2xl p-6 neon-glow backdrop-blur-md">
+                <div class="mb-6">
+                    <h2 class="text-xl font-bold text-teal-400">အဆင့် (၂) - လုံခြုံရေးမဏ္ဍိုင် (၃) ရပ် တည်ဆောက်ခြင်း</h2>
+                    <p class="text-xs text-slate-500">နေ့စဉ်အသုံးပြုရန် မဖြစ်မနေလိုအပ်သော အခြေခံအုတ်မြစ်များကို လက်တွေ့မြှင့်တင်ပါ။</p>
                 </div>
-                <button onclick="hideActionPlanPopup()" class="text-cream/80 hover:text-white text-xl p-1">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-            </div>
-            
-            <!-- Modal Content (Scrollable text area) -->
-            <div class="p-6 overflow-y-auto custom-scroll flex-grow text-gray-800 bg-[#f8fafc]">
-                <pre id="action-plan-content" class="whitespace-pre-wrap font-sans text-sm leading-relaxed text-gray-700"></pre>
-            </div>
-            
-            <!-- Modal Footer Controls -->
-            <div class="bg-gray-100 px-6 py-4 flex flex-col sm:flex-row justify-end gap-3 border-t border-gray-200">
-                <button onclick="hideActionPlanPopup()" class="border-2 border-navy/20 hover:border-navy text-navy font-bold px-5 py-2.5 rounded-xl transition-all text-sm">
-                    ပိတ်မည်
-                </button>
-                <button onclick="exportActionPlan()" class="bg-mint hover:bg-mint-dark text-navy hover:text-white font-bold px-6 py-2.5 rounded-xl transition-all shadow-md flex items-center justify-center gap-2 text-sm">
-                    <i class="fa-solid fa-download"></i> စာသားဖိုင်အဖြစ် ဒေါင်းလုဒ်ဆွဲမည်
-                </button>
-            </div>
-        </div>
-    </div>
 
-    <!-- AUDIO NOTIFICATION GENERATOR (Web Audio API) -->
-    <script>
-        function playAudioFeedback(type) {
-            try {
-                const ctx = new (window.AudioContext || window.webkitAudioContext)();
-                const osc = ctx.createOscillator();
-                const gain = ctx.createGain();
-                osc.connect(gain);
-                gain.connect(ctx.destination);
-                
-                if (type === 'success') {
-                    // Ascending clean tones for happy trigger
-                    osc.frequency.setValueAtTime(523.25, ctx.currentTime); // C5
-                    osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.15); // A5
-                    gain.gain.setValueAtTime(0.08, ctx.currentTime);
-                    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
-                    osc.start();
-                    osc.stop(ctx.currentTime + 0.3);
-                } else if (type === 'danger') {
-                    // Deep vibrating buzz
-                    osc.type = 'sawtooth';
-                    osc.frequency.setValueAtTime(220, ctx.currentTime); // A3
-                    osc.frequency.exponentialRampToValueAtTime(80, ctx.currentTime + 0.25); // low drop
-                    gain.gain.setValueAtTime(0.12, ctx.currentTime);
-                    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.4);
-                    osc.start();
-                    osc.stop(ctx.currentTime + 0.4);
-                } else if (type === 'click') {
-                    // Soft pop
-                    osc.frequency.setValueAtTime(600, ctx.currentTime);
-                    gain.gain.setValueAtTime(0.03, ctx.currentTime);
-                    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.05);
-                    osc.start();
-                    osc.stop(ctx.currentTime + 0.05);
-                }
-            } catch (e) {
-                console.log("Audio feedback skipped:", e);
-            }
-        }
-    </script>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Pillar 1: Password Strength -->
+                    <div class="bg-slate-950/80 p-5 rounded-xl border border-slate-800 flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center space-x-2 text-teal-400 mb-3">
+                                <i class="fa-solid fa-key"></i>
+                                <h3 class="font-bold text-xs">၁။ ခိုင်မာသောစကားဝှက်</h3>
+                            </div>
+                            <p class="text-[11px] text-slate-400 mb-4">အနည်းဆုံး ၈ လုံးပါပြီး စာလုံးကြီး/သေး၊ ဂဏန်းနှင့် အထူးသင်္ကေတများ စုံလင်သော စကားဝှက်တစ်ခုအား စမ်းသပ်ပါ သို့မဟုတ် အလိုအလျောက်ထုတ်ယူပါ။</p>
+                            <input type="password" id="pwd-tester" oninput="checkPasswordStrength()" placeholder="စမ်းသပ်ရန် ရိုက်ထည့်ပါ..." class="w-full bg-slate-900 border border-slate-850 rounded p-2 text-xs text-white focus:border-teal-500 outline-none">
+                            <div class="flex justify-between items-center text-[10px] mt-2">
+                                <span class="text-slate-500">စွမ်းရည်:</span>
+                                <span id="pwd-strength-txt" class="font-bold text-slate-500">စကားဝှက် ရိုက်ထည့်ပါ</span>
+                            </div>
+                            <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden mt-1">
+                                <div id="pwd-strength-bar" class="bg-slate-700 h-full w-0 transition-all duration-300"></div>
+                            </div>
+                        </div>
+                        <div class="space-y-2 mt-4">
+                            <button onclick="generateStrongPassword()" class="w-full bg-slate-900 border border-slate-800 hover:border-teal-500 text-teal-400 text-[10px] py-1.5 rounded">
+                                ခိုင်မာသော ပတ်စ်ဝပ် ထုတ်ပေးရန်
+                            </button>
+                            <div class="text-[11px] pt-1 text-slate-500 flex items-center justify-between" id="pillar1-status">
+                                <span class="text-red-400 font-bold"><i class="fa-solid fa-circle-xmark mr-1"></i> မပြည့်စုံသေးပါ</span>
+                            </div>
+                        </div>
+                    </div>
 
-    <!-- GAME ENGINE CODE -->
+                    <!-- Pillar 2: 2FA Toggle and Method selection -->
+                    <div class="bg-slate-950/80 p-5 rounded-xl border border-slate-800 flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center space-x-2 text-teal-400 mb-3">
+                                <i class="fa-solid fa-shield-cat"></i>
+                                <h3 class="font-bold text-xs">၂။ အဆင့်နှစ်ဆင့်ခံစနစ် (2FA)</h3>
+                            </div>
+                            <p class="text-[11px] text-slate-400 mb-4">အရေးကြီးအကောင့်များအားလုံးတွင် 2FA အား ဖွင့်လှစ်တပ်ဆင်ထားရှိပါ။</p>
+                            
+                            <div class="bg-slate-900 p-3 rounded border border-slate-850 space-y-3">
+                                <!-- 2FA Method Selector directly on the page -->
+                                <div class="space-y-1">
+                                    <label class="text-[10px] text-slate-400 block font-bold">2FA အသုံးပြုမည့် နည်းလမ်းကို ရွေးချယ်ပါ:</label>
+                                    <select id="stage2-2fa-method" onchange="update2FAMethod()" class="w-full bg-slate-950 border border-slate-800 rounded p-1.5 text-[11px] text-slate-200 focus:border-teal-500 outline-none">
+                                        <option value="" disabled selected>နည်းလမ်း ရွေးချယ်ပါ...</option>
+                                        <option value="Aegis / Google Authenticator App">Authenticator App (Google/Aegis/Proton) - လုံခြုံမှု မြင့်မားသည်</option>
+                                        <option value="Hardware Security Key (YubiKey)">Hardware Key (YubiKey) - အလွန်လုံခြုံသည်</option>
+                                        <option value="SMS Verification Code">SMS ဖုန်းနံပါတ်ကုဒ် - ဆင်းမ်ကတ်တူပွား (SIM Swap) ခံရနိုင်ခြေရှိ</option>
+                                        <option value="Email OTP Code">Email OTP ကုဒ် - အီးမေးလ်လုံခြုံရေးအပေါ် မူတည်သည်</option>
+                                    </select>
+                                </div>
+                                <div class="flex justify-between items-center pt-2 border-t border-slate-800/60">
+                                    <span class="text-xs font-bold text-slate-400">🛡️ 2-Step Activation</span>
+                                    <button id="btn-toggle-2fa" onclick="toggle2FA()" class="w-10 h-5 bg-slate-700 rounded-full p-1 relative transition-colors">
+                                        <div id="dot-2fa" class="w-3 h-3 bg-slate-300 rounded-full transition-transform transform translate-x-0"></div>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-[11px] mt-4 pt-2 border-t border-slate-800 text-slate-500" id="pillar2-status">
+                            <span class="text-red-400 font-bold"><i class="fa-solid fa-circle-xmark mr-1"></i> မပြည့်စုံသေးပါ</span>
+                        </div>
+                    </div>
+
+                    <!-- Pillar 3: Software Updates -->
+                    <div class="bg-slate-950/80 p-5 rounded-xl border border-slate-800 flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center space-x-2 text-teal-400 mb-3">
+                                <i class="fa-solid fa-circle-up"></i>
+                                <h3 class="font-bold text-xs">၃။ ဆော့ဖ်ဝဲလ် အဆင့်မြှင့်တင်ခြင်း</h3>
+                            </div>
+                            <p class="text-[11px] text-slate-400 mb-4">စနစ်တစ်ခုလုံး၏ လုံခြုံရေးအပေါက်များကို ဖာထေးရန် အမြဲတမ်း Update တင်ပါ။</p>
+                            
+                            <div class="bg-slate-900 p-3 rounded border border-slate-850 text-center">
+                                <div class="flex justify-between text-[10px] text-slate-500 mb-1">
+                                    <span>လက်ရှိဗားရှင်း: v14.2 (အန္တရာယ်ရှိ)</span>
+                                    <span id="update-percent">0%</span>
+                                </div>
+                                <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden mb-3">
+                                    <div id="update-bar" class="bg-emerald-500 h-full w-0 transition-all"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="space-y-2">
+                            <button id="btn-update-software" onclick="runSoftwareUpdate()" class="w-full bg-teal-600 hover:bg-teal-500 text-white font-bold py-1.5 rounded text-xs">
+                                Update အားလုံးတင်မည်
+                            </button>
+                            <div class="text-[11px] pt-1 text-slate-500 flex items-center justify-between" id="pillar3-status">
+                                <span class="text-red-400 font-bold"><i class="fa-solid fa-circle-xmark mr-1"></i> မပြည့်စုံသေးပါ</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex justify-between mt-8 pt-4 border-t border-slate-800">
+                    <button onclick="nextStage(1)" class="text-xs text-slate-500 hover:text-slate-300"><i class="fa-solid fa-chevron-left mr-1"></i> အနောက်သို့</button>
+                    <button onclick="validateStage2()" class="bg-teal-600 hover:bg-teal-500 px-8 py-2 rounded-lg text-sm font-bold">အတည်ပြုမည်</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- STAGE 3: CRISIS SIMULATION -->
+        <section id="stage-3" class="stage-section hidden animate-fade">
+            <div class="bg-slate-900/90 border border-teal-500/30 rounded-2xl p-6 neon-glow backdrop-blur-md">
+                <div class="flex justify-between items-center mb-6">
+                    <div>
+                        <h2 class="text-xl font-bold text-red-400 animate-pulse"><i class="fa-solid fa-triangle-exclamation mr-1"></i> အဆင့် (၃) - အရေးပေါ်ဖြစ်ရပ် တုံ့ပြန်ရေးစမ်းသပ်မှု</h2>
+                        <p class="text-xs text-slate-500">၁၅ စက္ကန့်အတွင်း အရေးပေါ်အခြေအနေအား အစဉ်လိုက် မှန်ကန်စွာ ကာကွယ်တုံ့ပြန်ပါ။</p>
+                    </div>
+                    <span class="text-xs bg-red-950/60 border border-red-500/30 text-red-400 px-2.5 py-1 rounded-full font-mono flex items-center space-x-1">
+                        <i class="fa-solid fa-hourglass-half animate-spin mr-1"></i> <span id="countdown">15</span>s
+                    </span>
+                </div>
+
+                <!-- Scenario Display -->
+                <div id="crisis-alert-box" class="bg-red-950/20 border border-red-500/30 rounded-xl p-4 flex items-center space-x-4 mb-6">
+                    <div class="w-12 h-12 rounded-full bg-red-900/40 border border-red-500 flex items-center justify-center flex-shrink-0 text-red-400">
+                        <i class="fa-solid fa-radiation text-xl animate-pulse"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-sm text-red-400" id="scenario-title">ခေါင်းစဉ်</h3>
+                        <p class="text-xs text-slate-400 mt-0.5" id="scenario-desc">ဖော်ပြချက်</p>
+                    </div>
+                </div>
+
+                <!-- Action list -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6" id="action-cards-container"></div>
+
+                <!-- Sequence view -->
+                <div class="bg-slate-950 p-3 rounded-lg border border-slate-800 flex items-center justify-between">
+                    <span class="text-xs text-slate-500">ရွေးချယ်ထားသော စီမံချက်အဆင့်ဆင့်:</span>
+                    <div class="flex gap-2" id="user-sequence-view"></div>
+                </div>
+
+                <div class="flex justify-between mt-8 pt-4 border-t border-slate-800">
+                    <button onclick="nextStage(2)" class="text-xs text-slate-500 hover:text-slate-300"><i class="fa-solid fa-chevron-left mr-1"></i> အနောက်သို့</button>
+                    <button onclick="validateCrisisOrder()" class="bg-red-600 hover:bg-red-500 px-8 py-2 rounded-lg text-sm font-bold text-white">တုံ့ပြန်မှု ဆန်းစစ်မည်</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- STAGE 4: PLAYBOOK QUESTIONNAIRE & GENERATOR -->
+        <section id="stage-4" class="stage-section hidden animate-fade">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Questionnaire Form -->
+                <div class="bg-slate-900/80 border border-teal-500/30 rounded-2xl p-6 neon-glow">
+                    <h2 class="text-xl font-bold text-teal-400 mb-4">အဆင့် (၄) - စီမံချက် ရေးဆွဲခြင်း</h2>
+                    <p class="text-xs text-slate-500 mb-6">မြေပြင်အခြေအနေနှင့် ပိုမိုကိုက်ညီသော စီမံချက်ရရှိရန် အောက်ပါမေးခွန်းများကို ဖြေဆိုပါ။</p>
+                    
+                    <div class="space-y-4">
+                        <div class="space-y-1">
+                            <label class="text-[11px] text-slate-400 uppercase font-bold">၁။ သင်၏ အဓိကလုပ်ငန်းမှာ မည်မျှ အန္တရာယ်ရှိသနည်း (Risk Level)?</label>
+                            <select id="q-risk" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs focus:border-teal-500 outline-none">
+                                <option value="Low">Low - ရံဖန်ရံခါ စောင့်ကြည့်ခံရနိုင်သည်</option>
+                                <option value="Medium">Medium - တိုက်ရိုက်ပစ်မှတ်ထားခံရနိုင်ခြေရှိသည်</option>
+                                <option value="High">High - အချိန်မရွေး အဖမ်းခံရခြင်း/အသိမ်းခံရခြင်း ဖြစ်နိုင်သည်</option>
+                            </select>
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-[11px] text-slate-400 uppercase font-bold">၂။ မည်သည့် အချက်အလက်က အရေးအကြီးဆုံး ဖြစ်သနည်း (Critical Assets)?</label>
+                            <select id="q-assets" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs focus:border-teal-500 outline-none">
+                                <option value="Contact Lists">Contact Lists - ဆက်သွယ်သူစာရင်းများ</option>
+                                <option value="Financial Evidence">Financial Records - ငွေကြေးအထောက်အထားများ</option>
+                                <option value="Field Documentation">Field Reports - ကွင်းဆင်းမှတ်တမ်းများ</option>
+                            </select>
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-[11px] text-slate-400 uppercase font-bold">၃။ အရေးပေါ် ဖုန်းဖျက်ပစ်ရမည့်အချိန် (Trigger point)?</label>
+                            <input type="text" id="q-trigger" value="ရှောင်တခင် ဝင်ရောက်စစ်ဆေးခံရချိန်" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs focus:border-teal-500 outline-none">
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-[11px] text-slate-400 uppercase font-bold">၄။ စက်ပစ္စည်းတိုင်းတွင် စကားဝှက် (Encryption) ခိုင်မာမှုရှိသလား?</label>
+                            <select id="q-enc" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs focus:border-teal-500 outline-none">
+                                <option value="Yes">Yes - စက်တိုင်း Encrypt လုပ်ထားပြီးဖြစ်သည်</option>
+                                <option value="Partially">Partially - အချို့သော ဖိုင်တွဲများကိုသာ ပိတ်ထားသည်</option>
+                                <option value="No">No - မပြုလုပ်ရသေးပါ</option>
+                            </select>
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-[11px] text-slate-400 uppercase font-bold">၅။ 2FA (အဆင့်နှစ်ဆင့်ခံလုံခြုံရေး) ကို မည်သည့်နည်းလမ်းဖြင့် လုပ်ဆောင်မလဲ?</label>
+                            <select id="q-2fa-method" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs focus:border-teal-500 outline-none">
+                                <option value="Aegis / Google Authenticator App">Authenticator App (Google/Aegis/Proton) - လုံခြုံမှု မြင့်မားသည်</option>
+                                <option value="Hardware Security Key (YubiKey)">Hardware Key (YubiKey) - အလွန်လုံခြုံပြီး ကြားဖြတ်ရခက်ခဲသည်</option>
+                                <option value="SMS Verification Code">SMS ဖုန်းနံပါတ်ကုဒ် - ဆင်းမ်ကတ်တူပွား (SIM Swap) ခံရနိုင်၍ သတိပြုရန်</option>
+                                <option value="Email OTP Code">Email OTP ကုဒ် - အီးမေးလ်လုံခြုံရေးအပေါ် လုံးဝမူတည်သည်</option>
+                            </select>
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-[11px] text-slate-400 uppercase font-bold">၆။ အရေးပေါ် ဆက်သွယ်ရန် လျှို့ဝှက်စကား (Safe Word)?</label>
+                            <input type="text" id="q-safeword" value="ကိတ်မုန့်စားချင်တယ်" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs focus:border-teal-500 outline-none">
+                        </div>
+                        
+                        <button onclick="generatePlaybook()" class="w-full bg-teal-600 hover:bg-teal-500 text-white font-bold py-2.5 rounded-xl transition-all shadow-lg shadow-teal-600/10 text-xs mt-4">
+                            စီမံချက် အပြီးသတ် ထုတ်ယူမည်
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Live Playbook Preview -->
+                <div class="bg-slate-950/80 border border-slate-800 rounded-2xl p-6 relative overflow-hidden flex flex-col justify-between">
+                    <div class="absolute top-0 right-0 p-4 opacity-5">
+                        <i class="fa-solid fa-file-shield text-9xl"></i>
+                    </div>
+                    <div id="playbook-result" class="h-full flex flex-col">
+                        <div class="text-center py-20 text-slate-600 italic text-xs">
+                            မေးခွန်းများဖြေဆိုပြီး "စီမံချက်ထုတ်ယူမည်" ကို နှိပ်ပါ...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="p-4 border-t border-slate-900 bg-slate-950 text-center">
+        <p class="text-[10px] text-slate-600 uppercase tracking-widest font-mono">HRD Digital Security Tactical Simulator v2.2 - Encrypted Session</p>
+    </footer>
+
     <script>
-        // Quest repository based on PowerPoint presentation contents (Digital_Resilience_for_Defenders.pptx)
-        // Refactored with exact Burma explanation and advice fields to generate Dynamic Action Plan.
-        const questRepository = [
+        // GAME STATE
+        let stage = 0;
+        let score = 0;
+        let s1Selection = {}; // { threatId: 'category' }
+        
+        // Stage 2 state
+        let isPillar1Done = false;
+        let isPillar2Done = false;
+        let isPillar3Done = false;
+
+        // Stage 3 state
+        let countdownTimer;
+        let secondsLeft = 15;
+        let currentScenarioIndex = 0;
+        let userActionSequence = [];
+
+        // Dynamic 9 Threat Items with clear Myanmar labels
+        const threats = [
+            { id: 0, title: "📱 စမတ်ဖုန်း သို့မဟုတ် ကွန်ပျူတာကို အတင်းအဓမ္မ သိမ်းဆည်းစစ်ဆေးခံရခြင်း", cat: "devices" },
+            { id: 1, title: "☁️ Cloud Backup ဒေတာများ ပေါက်ကြားခြင်း", cat: "data" },
+            { id: 2, title: "📡 ဝိုင်ဖိုင် သို့မဟုတ် ဖုန်းလိုင်း ကြားဖြတ်နားထောင်ခံရခြင်း", cat: "comms" },
+            { id: 3, title: "🦠 စက်ပစ္စည်းများအတွင်း Spyware အခိုးသွင်းခံရခြင်း", cat: "devices" },
+            { id: 4, title: "🔑 စကားဝှက်များ ပေါက်ကြားပြီး အကောင့်ဟက်ခ်ခံရခြင်း", cat: "data" },
+            { id: 5, title: "🎣 Phishing မက်ဆေ့ခ်ျများဖြင့် လှည့်စားခံရခြင်း", cat: "comms" },
+            { id: 6, title: "📶 အများသုံး Wi-Fi မှတစ်ဆင့် အချက်အလက် ခိုးယူခံရခြင်း", cat: "comms" },
+            { id: 7, title: "💾 Encryption မရှိသော USB/HDD များ ပျောက်ဆုံးခြင်း", cat: "data" },
+            { id: 8, title: "📍 GPS သို့မဟုတ် စက်ပစ္စည်းမှတစ်ဆင့် တည်နေရာ ခြေရာခံခံရခြင်း", cat: "devices" }
+        ];
+
+        // Scenarios for Stage 3
+        const scenarios = [
             {
-                id: 1,
-                category: "Threat Modeling (အန္တရာယ်ဆန်းစစ်ခြင်း)",
-                icon: "fa-solid fa-route",
-                description: "လုပ်ဖော်ကိုင်ဖက်တစ်ဦးက မြေပြင်ကွင်းဆင်းအချက်အလက်တွေကို စာရွက်ပေါ်မှာ အလောတကြီးရေးမှတ်ပြီး ဓာတ်ပုံရိုက်ကာ ပေးပို့လာပါတယ်။ ဒီဓာတ်ပုံတွေကို ဒစ်ဂျစ်တယ်စနစ်နဲ့ သိမ်းဆည်းဖို့ သူက 'ဖုန်းထဲမှာပဲ Groceries_List ဆိုပြီး အမည်ပြောင်းသိမ်းထားရင် ဘယ်သူမှမရိပ်မိနိုင်ဘူး' လို့ အကြံပြုပါတယ်။ သင် ဘာလုပ်မလဲ။",
-                choices: [
-                    {
-                        text: "ဖိုင်နာမည်လွှဲထားရုံနှင့် မလုံလောက်ပါ။ Metadata များကို အမြဲဖျက်ပြီး၊ Cryptomator သို့မဟုတ် VeraCrypt ကဲ့သို့သော ကုဒ်ဝှက်စနစ်သုံးထားသည့် လျှို့ဝှက်စနစ်ထဲတွင် ထည့်သွင်းသိမ်းဆည်းမည်။",
-                        secMod: 30,
-                        riskMod: -20,
-                        title: "အလွန်မြော်အမြင်ရှိပါသည်!",
-                        explanation: "အရေးကြီးဒေတာများကို သိမ်းဆည်းရာတွင် ဖိုင်အမည်ပြောင်းရုံဖြင့် သာမန်စစ်ဆေးသူများကိုပင် မလှည့်စားနိုင်ပါ။ ဒေတာလုံုံခြုံရေး၏ အဓိကသော့ချက်မှာ စစ်ဘက်သုံးအဆင့် ကုဒ်ဝှက်စနစ် (Encryption) ဖြင့် ကာကွယ်ထားခြင်း ဖြစ်သည်။",
-                        sound: "success",
-                        advice: "သတင်းအချက်အလက်များကို ကုဒ်ဝှက်သိမ်းဆည်းခြင်းနှင့် Metadata ဖျက်ဆီးခြင်းဗျူဟာကို ဆက်လက်ကျင့်သုံးပါ။"
-                    },
-                    {
-                        text: "လောလောဆယ် အလုပ်ရှုပ်သက်သာစေရန် အကြံပြုချက်အတိုင်း ဖိုင်အမည်ပြောင်းကာ ဖုန်း၏ သာမန် Gallery Folder ထဲတွင်ပဲ သိမ်းဆည်းထားမည်။",
-                        secMod: -25,
-                        riskMod: 35,
-                        title: "အလွန်အန္တရာယ်များပါသည်!",
-                        explanation: "စစ်ဆေးရေးဂိတ်များ သို့မဟုတ် ဖုန်းသိမ်းဆည်းစစ်ဆေးခံရချိန်တွင် 'Groceries List' အမည်ရှိသော ဖိုင်များကို ဖွင့်ကြည့်လိုက်ရုံဖြင့် အချက်အလက်များ လွယ်ကူစွာ ပေါက်ကြားသွားပြီး ဒေသခံများနှင့် သင့်ကို အသက်အန္တရာယ်ကျရောက်စေနိုင်ပါသည်။",
-                        sound: "danger",
-                        advice: "အရေးကြီး HRV ဖိုင်များကို သာမန်ဖိုင်အမည်ပြောင်းရုံဖြင့် သိမ်းဆည်းခြင်းကို ရှောင်ကြဉ်ပါ။ Metadata များကို အမြဲဖျက်ပြီး Cryptomator သို့မဟုတ် VeraCrypt ဖြင့် Encrypt လုပ်ပါ။"
-                    },
-                    {
-                        text: "ဖုန်းထဲတွင် သိမ်းဆည်းခြင်းမပြုဘဲ အဖွဲ့ပိုင် Google Drive သို့မဟုတ် Cloud ပေါ်သို့ သာမန်အတိုင်း Upload တင်ပြီး ဖုန်းထဲမှ ဓာတ်ပုံကို ဖျက်ပစ်မည်။",
-                        secMod: 10,
-                        riskMod: 15,
-                        title: "သတိပြုရန် လိုအပ်ပါသည်!",
-                        explanation: "ဖုန်းထဲမှ ဖျက်လိုက်ခြင်းက ကောင်းသော်လည်း သာမန် Cloud Storage ပေါ်သို့ 2FA မပါဘဲ သို့မဟုတ် ကုဒ်မဝှက်ဘဲ တင်ထားခြင်းသည် အဝေးမှ ဟက်ခ်လုပ်စောင့်ကြည့်သူများအတွက် အချက်အလက်များကို အလွယ်တကူ ရရှိသွားစေနိုင်ပါသည်။",
-                        sound: "danger",
-                        advice: "2FA သို့မဟုတ် ကုဒ်ဝှက်စနစ်မပါဘဲ Google Drive/Cloud ပေါ်သို့ HRV ဒေတာများ လုံးဝမတင်ပါနှင့်။"
-                    }
+                title: "ဖုန်း သို့မဟုတ် စက်ပစ္စည်း အသိမ်းခံလိုက်ရပြီ / ပျောက်ဆုံးသွားပြီ!",
+                desc: "မိမိနှင့်အဖွဲ့သားများ၏ လုံခြုံရေးအတွက် အမြန်ဆုံးလုပ်ဆောင်ရမည့်အစီအစဉ်။",
+                actions: [
+                    { id: 'S1-A1', text: "အခြားစက်တစ်ခုခုမှ မိမိအကောင့်များသို့ဝင်ပြီး 'Log out of all devices' ပြုလုပ်ပါ", order: 1 },
+                    { id: 'S1-A2', text: "ဖြစ်နိုင်ပါက Find My Device / iCloud မှတစ်ဆင့် စက်အတွင်းရှိဒေတာကို Remote Wipe ဖြင့် ဖျက်ပစ်ပါ", order: 2 },
+                    { id: 'S1-A3', text: "လုပ်ဖော်ကိုင်ဖက်များနှင့် အဖွဲ့အစည်းအား ချက်ချင်းအသိပေးပြီး မသင်္ကာဖွယ် မက်ဆေ့ခ်ျများကို သတိထားရန် ပြောပါ", order: 3 }
                 ]
             },
             {
-                id: 2,
-                category: "Passphrase Selection (စကားစု ရွေးချယ်ခြင်း)",
-                icon: "fa-solid fa-key",
-                description: "အရေးကြီး HRV ဖိုင်များကို Encrypt ပြုလုပ်ရန် သို့မဟုတ် Password Manager အတွက် သော့ချက်စကားလုံး သတ်မှတ်ရပါမည်။ လူမှုကွန်ရက်ပေါ်မှာ တင်လေ့ရှိတဲ့ သင့်အကြိုက်ဆုံး ကဗျာစာသားတစ်ကြောင်း သို့မဟုတ် ထူးခြားတဲ့ သင်္ကေတတွေပါတဲ့ စကားလုံးတိုကို သုံးဖို့ စဉ်းစားနေပါတယ်။ ဘယ်လိုစကားစုမျိုးကို ရွေးချယ်မလဲ။",
-                choices: [
-                    {
-                        text: "မှတ်မိလွယ်ပြီး Brute-force တိုက်ခိုက်မှုများကို ကာကွယ်ရန် လူမှုကွန်ရက်ပေါ်တွင် မဝေမျှဖူးသည့် စာလုံး ၄ လုံးထက်မနည်းပါသော စကားစု (Passphrase) 'မိုးသည်းထန်စွာရွာသွန်းနေသည်' ကဲ့သို့သော စာကြောင်းကို သုံးမည်။",
-                        secMod: 35,
-                        riskMod: -25,
-                        title: "အလွန်ထူးချွန်သော ရွေးချယ်မှု ဖြစ်သည်!",
-                        explanation: "ရှည်လျားသော စကားစု (Passphrase) များသည် လူအတွက် မှတ်မိရလွယ်ကူသော်လည်း ကွန်ပျူတာစနစ်များဖြင့် Brute-force တိုက်ခိုက်ဟက်ခ်လုပ်ရန် မဖြစ်နိုင်သလောက် ခက်ခဲလှပါသည်။ အကောင့်တိုင်းအတွက် သီးသန့်စကားစု သုံးသင့်သည်။",
-                        sound: "success",
-                        advice: "လုံခြုံစိတ်ချရသော စကားစု (Passphrase) စံနှုန်းကို ဆက်လက်ထိန်းသိမ်းပါ။"
-                    },
-                    {
-                        text: "မှတ်ရလွယ်ကူပြီး စာလုံးတိုသော်လည်း သင်္ကေတများစွာပါဝင်သည့် 'P@$w0rd!' သို့မဟုတ် 'Hrd2026!' ကဲ့သို့ စကားဝှက်ကို သုံးမည်။",
-                        secMod: -15,
-                        riskMod: 20,
-                        title: "အကောင့်ဟက်ခ်ခံရနိုင်ခြေ မြင့်မားသည်!",
-                        explanation: "စာလုံးတိုသော စကားဝှက်များသည် သင်္ကေတများ မည်မျှပင်ပါဝင်စေကာမူ ခေတ်မီဟက်ကာကွန်ပျူတာဆော့ဖ်ဝဲလ်များအတွက် မိနစ်ပိုင်းအတွင်း Brute-force လုပ်ပြီး ဟက်ခ်လုပ်ရန် အလွန်လွယ်ကူလှပါသည်။",
-                        sound: "danger",
-                        advice: "သင်္ကေတများပါသော်လည်း တိုတောင်းသော စကားဝှက်များကို ဟက်ကာများ အလွယ်တကူ ဟက်ခ်နိုင်သဖြင့် စာလုံးရေရှည်လျားသော စကားစု (Passphrase) သို့ ပြောင်းလဲပါ။"
-                    },
-                    {
-                        text: "လူမှုကွန်ရက်တွင် ဝေမျှဖူးသော်လည်း အများစု သတိမထားမိနိုင်လောက်သည့် ကိုယ်နှစ်သက်သော ကဗျာစာသားတစ်ကြောင်းကို အသုံးပြုမည်။",
-                        secMod: 5,
-                        riskMod: 15,
-                        title: "သတိပြုရန် လိုအပ်ပါသည်!",
-                        explanation: "လူမှုကွန်ရက်တွင် ဝေမျှဖူးသော စာသားများသည် အချက်အလက်များကို OSINT နည်းလမ်းဖြင့် လိုက်လံထောက်လှမ်းနေသော စောင့်ကြည့်သူများ (Adversaries) အတွက် လွယ်ကူသော သဲလွန်စ ဖြစ်သွားနိုင်ပါသည်။",
-                        sound: "danger",
-                        advice: "လူမှုကွန်ရက်တွင် ရေးဖူးသော စာသားများကို စကားဝှက်အဖြစ် အသုံးမပြုပါနှင့်။ OSINT စောင့်ကြည့်ရေးနည်းလမ်းများဖြင့် အလွယ်တကူ ခန့်မှန်းခံရနိုင်ပါသည်။"
-                    }
-                ]
-            },
-            {
-                id: 3,
-                category: "Phishing (လိမ်လည်လှည့်ဖြားမှု)",
-                icon: "fa-solid fa-fish-hook",
-                description: "သင့်ဆီသို့ ယုံကြည်ရသော နည်းပညာပံ့ပိုးကူညီရေးအဖွဲ့ထံမှလိုလိုဟန်ဆောင်ကာ 'အဖွဲ့တွင်းဆာဗာ ပြုပြင်ပြောင်းလဲမှုများရှိနေသဖြင့် ဒေတာများမဆုံးရှုံးစေရန် ၂ နာရီအတွင်း drive.google-secure-verify.org သို့ ဝင်ရောက်အကောင့်ပြောင်းရွှေ့ပေးပါ' ဟူသော အရေးပေါ် အီးမေးလ် ရောက်လာသည်။ ဘာလုပ်မလဲ။",
-                choices: [
-                    {
-                        text: "ရပ် (Pause) - ချက်ချင်းမနှိပ်ဘဲ ရပ်တန့်မည်။ စစ် (Inspect) - ဒိုမိန်းအမည်ကို စစ်ဆေးပြီး အဖွဲ့၏နည်းပညာတာဝန်ခံထံ တိုက်ရိုက်အတည်ပြုမည်။ လုပ် (Act) - လင့်ခ်တုဖြစ်သဖြင့် မက်ဆေ့ခ်ျကို အပြီးဖျက်မည်။",
-                        secMod: 30,
-                        riskMod: -20,
-                        title: "အလွန်ပါးနပ်လှပါသည်!",
-                        explanation: "မသင်္ကာဖွယ် လင့်ခ်များ ကြုံတွေ့ရပါက 'ရပ်-စစ်-လုပ်' လုပ်ငန်းစဉ်အတိုင်း တည်ငြိမ်စွာ ဆန်းစစ်ခြင်းသည် အကောင်းဆုံး ဖစ်ရှရရှိ (Phishing) ကာကွယ်ရေးစနစ် ဖြစ်သည်။ drive.google-secure-verify.org သည် Google အစစ် မဟုတ်ပါ။",
-                        sound: "success",
-                        advice: "မသင်္ကာဖွယ်လင့်ခ်များ ကြုံတွေ့ရပါက 'ရပ်-စစ်-လုပ်' လုပ်ငန်းစဉ်ကို ဆက်လက်ကျင့်သုံးပါ။"
-                    },
-                    {
-                        text: "အဖွဲ့၏ အချက်အလက်များ ဆုံးရှုံးသွားမည်စိုးသဖြင့် လင့်ခ်ကို ချက်ချင်းနှိပ်၍ မိမိဂျီမေးလ်အကောင့်ဖြင့် ဝင်ရောက်ကာ ပြောင်းလဲမည်။",
-                        secMod: -30,
-                        riskMod: 35,
-                        title: "အကောင့်ဝင်ခွင့် ပေါက်ကြားသွားပါပြီ!",
-                        explanation: "လင့်ခ်တုများမှတစ်ဆင့် Password နှင့် OTP (သို့မဟုတ် နှစ်ဆင့်ခံကုဒ်) ကို တောင်းယူခြင်းသည် ဟက်ကာများ အသုံးအများဆုံးသော လှည့်ဖြားခြင်း (Phishing) ဖြစ်ပြီး အကောင့်တစ်ခုလုံး ဆုံးရှုံးသွားစေနိုင်ပါသည်။",
-                        sound: "danger",
-                        advice: "အရေးတကြီးဖြစ်စေခြင်း သို့မဟုတ် လင့်ခ်တုများပါသော မက်ဆေ့ခ်ျများကို ချက်ချင်းမနှိပ်ပါနှင့်။ 'ရပ်-စစ်-လုပ်' နည်းလမ်းအတိုင်း အရင်ဆန်းစစ်ပါ။"
-                    },
-                    {
-                        text: "လင့်ခ်ကို မနှိပ်သေးဘဲ အီးမေးလ်ကို အဖွဲ့တွင်းရှိ အခြားလုပ်ဖော်ကိုင်ဖက်များထံ Forward လုပ်ပြီး ၎င်းတို့အား အရင်စစ်ဆေးခိုင်းမည်။",
-                        secMod: 5,
-                        riskMod: 15,
-                        title: "သတိပြုရန် လိုအပ်ပါသည်!",
-                        explanation: "သံသယဖြစ်ဖွယ် အီးမေးလ်များကို Forward လုပ်ခြင်းသည် အခြားလုပ်ဖော်ကိုင်ဖက်များပါ မတော်တဆ နှိပ်မိစေပြီး တစ်ဖွဲ့လုံး၏ ကွန်ရက်ထဲသို့ Spyware သို့မဟုတ် Malware ဝင်ရောက်သွားစေနိုင်ပါသည်။",
-                        sound: "danger",
-                        advice: "သံသယဖြစ်ဖွယ် အီးမေးလ်များကို အခြားသူများထံ Forward ပြုလုပ်ခြင်းဖြင့် မဲလ်ဝဲလ်ပျံ့နှံ့စေနိုင်သဖြင့် ရှောင်ကြဉ်ပါ။"
-                    }
-                ]
-            },
-            {
-                id: 4,
-                category: "Spyware Awareness (စောင့်ကြည့်စနစ်)",
-                icon: "fa-solid fa-spider",
-                description: "အစည်းအဝေးတစ်ခုအတွင်း သင့်ဖုန်းကို စားပွဲပေါ်တင်ထားစဉ် အသုံးမပြုဘဲနှင့် ဖုန်းက ပူနွေးလာပြီး ဘက်ထရီ ရာခိုင်နှုန်း သိသိသာသာ ကျဆင်းနေတာကို သတိပြုမိပါတယ်။ ဒါ့အပြင် အင်တာနက်အသုံးပြုမှု ညွှန်းကိန်းတွေကလည်း တက်နေပါတယ်။ ဘာလုပ်မလဲ။",
-                choices: [
-                    {
-                        text: "စပိုင်ဝဲလ် (Spyware) သို့မဟုတ် မဲလ်ဝဲလ်အန္တရာယ်ဟု ယူဆပြီး အရေးကြီးလုပ်ငန်းများတွင် စက်ကိုအသုံးမပြုတော့ဘဲ ဒေတာများကို Backup လုပ်ကာ ဖုန်းကို Factory Reset ပြုလုပ်မည်။",
-                        secMod: 30,
-                        riskMod: -20,
-                        title: "အသိဉာဏ်ရှိသော ဆုံးဖြတ်ချက်!",
-                        explanation: "စက်ပစ္စည်းများ အသုံးမပြုဘဲ ပူနွေးလာခြင်း၊ ဘက်ထရီကုန်မြန်ခြင်းနှင့် အင်တာနက်ဒေတာ သုံးစွဲမှု ပုံမှန်မဟုတ်ဘဲ တက်နေခြင်းသည် နောက်ကွယ်မှ စပိုင်ဝဲလ် (Spyware) ခိုးယူအလုပ်လုပ်နေသည့် အဓိက လက္ခဏာရပ်များ ဖြစ်သည်။",
-                        sound: "success",
-                        advice: "မသင်္ကာဖွယ် စက်ပစ္စည်းမူမမှန်မှုများကို သိရှိပါက အမြဲ Backup ယူပြီး Factory Reset ပြုလုပ်ပါ။"
-                    },
-                    {
-                        text: "ဖုန်းဟောင်းလွန်းသဖြင့် သို့မဟုတ် နောက်ကွယ် (Background) တွင် App အချို့ ပွင့်နေသဖြင့် ဖြစ်သည်ဟု ယူဆကာ ပုံမှန်အတိုင်း ဆက်သုံးမည်။",
-                        secMod: -25,
-                        riskMod: 35,
-                        title: "စောင့်ကြည့်ခံနေရပါသည်!",
-                        explanation: "လက္ခဏာများကို လျစ်လျူရှုပြီး ဤစက်ဖြင့် HRV အရေးကြီးလုပ်ငန်းများ ဆက်လက်လုပ်ဆောင်ပါက သင့်တည်နေရာ၊ ဖုန်းခေါ်ဆိုမှုများနှင့် မက်ဆေ့ခ်ျအားလုံးကို စောင့်ကြည့်သူများထံ အဝေးမှ လှမ်းယူသွားစေပါလိမ့်မည်။",
-                        sound: "danger",
-                        advice: "ဘက်ထရီပူခြင်း သို့မဟုတ် ဒေတာအလိုအလျောက်ကုန်ဆုံးခြင်းတို့သည် Spyware ၏ လက္ခဏာရပ်များ ဖြစ်သည်။ ၎င်းစက်များဖြင့် HRV လုပ်ငန်းများ ဆက်မလုပ်ပါနှင့်။"
-                    },
-                    {
-                        text: "ဖုန်းကို ပါဝါခေတ္တပိတ်ပြီး ပြန်ဖွင့်ကာ (Restart) ပုံမှန်အတိုင်း အရေးကြီးစာတိုများ ပို့ဆောင်ရန် ဆက်လက်အသုံးပြုမည်။",
-                        secMod: 10,
-                        riskMod: 15,
-                        title: "သတိပြုရန် လိုအပ်ပါသည်!",
-                        explanation: "Restart ပြုလုပ်ခြင်းသည် အချို့သော ယာယီစပိုင်ဝဲလ်များကို နှောင့်နှေးစေနိုင်သော်လည်း စနစ်ထဲအထိ ခိုအောင်းဝင်ရောက်ပြီးသား ဆော့ဖ်ဝဲလ်များကို လုံးဝရှင်းလင်းသွားစေနိုင်ခြင်း မရှိပါ။",
-                        sound: "danger",
-                        advice: "ပါဝါပိတ်/ဖွင့်ရုံဖြင့် စပိုင်ဝဲလ်များကို အမြစ်ပြတ်မရှင်းလင်းနိုင်ပါ။ စိတ်ချရသော အော့ဖ်လိုင်းစနစ်တွင် စက်ကို သန့်စင်ပါ။"
-                    }
-                ]
-            },
-            {
-                id: 5,
-                category: "Social Media / Doxxing Prevention",
-                icon: "fa-solid fa-user-shield",
-                description: "လူမှုကွန်ရက်ပေါ်မှာ လုပ်ငန်းခွင်အောင်မြင်မှုအတွေ့အကြုံကို ဝေမျှချင်ပါတယ်။ သို့သော် လုပ်ငန်းခွင်ပုံရိပ်တွေထဲမှာ လုပ်ဖော်ကိုင်ဖက်တွေရဲ့ ဓာတ်ပုံနဲ့ နောက်ကွယ်က တည်နေရာအချို့ ပါဝင်နေပါတယ်။ အွန်လိုင်းတိုက်ခိုက်သူတွေရဲ့ ပစ်မှတ်မဖြစ်စေဘဲ ဘယ်လို ဘေးကင်းအောင် တင်မလဲ။",
-                choices: [
-                    {
-                        text: "ပရိုဖိုင်ကို လော့ခ်ချ (Locked Down Profile) မည်။ ဓာတ်ပုံပါ လုပ်ဖော်ကိုင်ဖက်များ၏ မျက်နှာကို ဖုံးကွယ် (Blur) ပြီး၊ တည်နေရာပြ Metadata များ ဖျက်ထုတ်ပြီးမှ တင်မည်။",
-                        secMod: 30,
-                        riskMod: -20,
-                        title: "အလွန်ဘေးကင်းလုံခြုံပါသည်!",
-                        explanation: "Social Media ပေါ်ရှိ Privacy Settings များကို တင်းကျပ်ထားခြင်း၊ သူငယ်ချင်းစာရင်း ဖျောက်ထားခြင်းနှင့် ဓာတ်ပုံ၏ နောက်ကွယ်ရှိ EXIF Metadata (GPS တည်နေရာပြ) များ ဖျက်ထုတ်ခြင်းသည် Doxxing တိုက်ခိုက်မှုများကို ထိရောက်စွာ တားဆီးပေးပါသည်။",
-                        sound: "success",
-                        advice: "Social Media တွင် Profile Lock ချခြင်းနှင့် ဓာတ်ပုံပါ မျက်နှာများနှင့် Metadata များ ဖျက်ခြင်းကို ဆက်လုပ်ပါ။"
-                    },
-                    {
-                        text: "အများပြည်သူ ပိုမိုမြင်တွေ့စေရန် မိမိ၏ Profile ကို Public ထားရှိပြီး၊ သွားလာသမျှ နေရာများကို အချိန်နှင့်တပြေးညီ ပုံများတင်မည်။",
-                        secMod: -20,
-                        riskMod: 30,
-                        title: "ကိုယ်ရေးအချက်အလက် ပေါက်ကြားသွားပါပြီ!",
-                        explanation: "အကောင့်ကို လုံးဝဖွင့်ချထားပြီး တည်နေရာများ ချပြခြင်းသည် စောင့်ကြည့်သူများနှင့် တိုက်ခိုက်သူများအတွက် သင့်ကို အလွယ်တကူ ရှာဖွေတွေ့ရှိပြီး တိုက်ခိုက်ရန် လမ်းစပေးသကဲ့သို့ ဖြစ်သွားပါမည်။",
-                        sound: "danger",
-                        advice: "Social Media ပရိုဖိုင်ကို Public ထားပြီး တည်နေရာများ တိုက်ရိုက်တင်ခြင်းကို ချက်ချင်းရှောင်ကြဉ်ပါ။ အကောင့်အား Locked Down Profile လုပ်ပါ။"
-                    },
-                    {
-                        text: "ပရိုဖိုင်ကို သာမန်အတိုင်းထားသော်လည်း စာသားထဲတွင် တိကျသော တည်နေရာကို ချန်လှပ်၍ ဓာတ်ပုံများကို မူရင်းအတိုင်း တင်မည်။",
-                        secMod: 5,
-                        riskMod: 15,
-                        title: "သတိပြုရန် လိုအပ်ပါသည်!",
-                        explanation: "စာသားထဲတွင် တည်နေရာမရေးသော်လည်း ဓာတ်ပုံနောက်ခံနှင့် EXIF metadata တို့မှ ခြေရာခံနိုင်သဖြင့် ဓာတ်ပုံမတင်မီ အမြဲသန့်စင်ပါ။",
-                        sound: "danger",
-                        advice: "စာသားထဲတွင် တည်နေရာမရေးသော်လည်း ဓာတ်ပုံနောက်ခံနှင့် EXIF metadata တို့မှ ခြေရာခံနိုင်သဖြင့် ဓာတ်ပုံမတင်မီ အမြဲသန့်စင်ပါ။"
-                    }
-                ]
-            },
-            {
-                id: 6,
-                category: "3-2-1 Backup Strategy (၃-၂-၁ ဘက်အပ်ဗျူဟာ)",
-                icon: "fa-solid fa-hard-drive",
-                description: "ရုံးခန်းအတွင်း လုံခြုံရေးအရ ဝင်ရောက်စီးနင်းမှု သို့မဟုတ် ကွန်ပျူတာပျက်စီးမှုများ ရုတ်တရက် ဖြစ်လာနိုင်ခြေရှိတယ်လို့ သတင်းရရှိထားပါတယ်။ သင့်အဖွဲ့ရဲ့ နှစ်ပေါင်းများစွာ စုဆောင်းထားတဲ့ အချက်အလက်တွေ တစ်စုံတစ်ရာ မထိခိုက်စေဖို့ ဘယ်လို ဗျူဟာကျကျ ပွားယူသိမ်းဆည်းမလဲ။",
-                choices: [
-                    {
-                        text: "၃-၂-၁ ဗျူဟာအတိုင်း မိတ္တူ (၃) စုံကို ကွန်ပျူတာနှင့် External Drive (Media ၂ မျိုး) တွင် သိမ်းဆည်းပြီး၊ ကျန် (၁) စုံကို သီးခြားလုံခြုံသော Cloud (Off-site) ပေါ်တွင် 2FA ခံ၍ သိမ်းဆည်းမည်။",
-                        secMod: 35,
-                        riskMod: -25,
-                        title: "အထူးပြည့်စုံသော ဘက်အပ်စနစ် ဖြစ်သည်!",
-                        explanation: "၃-၂-၁ ဘက်အပ်ဗျူဟာ (မိတ္တူ ၃ စုံ၊ မတူညီသော စက်ပစ္စည်း ၂ မျိုး၊ သီးခြားနေရာ ၁ ခု) အတိုင်း ကျင့်သုံးခြင်းသည် ဒေတာများကို မည်သည့်ဘေးအန္တရာယ်မှမဆို အကောင်းဆုံး ရှင်သန်စေနိုင်သည့် စနစ်ဖြစ်သည်။",
-                        sound: "success",
-                        advice: "၃-၂-၁ ဘက်အပ်ဗျူဟာအတိုင်း ကာကွယ်ခြင်းစနစ်ကို ဆက်လက်ထိန်းသိမ်းပါ။"
-                    },
-                    {
-                        text: "ပျောက်ဆုံးမည်စိုးသဖြင့် သင့်ကွန်ပျူတာ၏ မတူညီသော Folder (၃) ခုခွဲ၍ မိတ္တူများ ကူးယူသိမ်းဆည်းထားမည်။",
-                        secMod: -15,
-                        riskMod: 20,
-                        title: "ဒေတာ ဆုံးရှုံးနိုင်ခြေ ရှိပါသည်!",
-                        explanation: "ကွန်ပျူတာတစ်လုံးတည်းတွင် Folder ခွဲသိမ်းခြင်းသည် စက်ပျက်စီးခြင်း သို့မဟုတ် အသိမ်းခံရခြင်း ကြုံတွေ့ရပါက ဒေတာများအားလုံး တစ်ပြိုင်တည်း ဆုံးရှုံးသွားပါမည်။ စက်ပစ္စည်း ခွဲခြားသိမ်းဆည်းရန် လိုအပ်သည်။",
-                        sound: "danger",
-                        advice: "စက်တစ်လုံးတည်းတွင် Folder ခွဲသိမ်းခြင်းသည် ဘက်အပ်မဟုတ်ပါ။ စက်ပျက်စီးပါက အကုန်ဆုံးရှုံးနိုင်သဖြင့် စက်ပစ္စည်းခွဲ၍ ဘက်အပ်လုပ်ပါ။"
-                    },
-                    {
-                        text: "အချက်အလက်အားလုံးကို USB Flash Drive တစ်ခုတည်းသို့ ကူးယူပြီး လုံခြုံသောအိမ်တစ်အိမ်တွင် ဝှက်ထားမည်။",
-                        secMod: 10,
-                        riskMod: 15,
-                        title: "သတိပြုရန် လိုအပ်ပါသည်!",
-                        explanation: "USB Flash Drive တစ်ခုတည်း သုံးခြင်းသည် ထို Drive ပျက်စီးသွားပါက သို့မဟုတ် လမ်းခရီးတွင် ပျောက်ဆုံးသွားပါက အချက်အလက်များကို ပြန်လည်ရယူနိုင်တော့မည် မဟုတ်ပါ။",
-                        sound: "danger",
-                        advice: "USB Flash Drive တစ်ခုတည်း သုံးခြင်းသည် ပျောက်ဆုံး/ပျက်စီးလွယ်သဖြင့် Media နှစ်မျိုးထက်မက ခွဲခြားသိမ်းဆည်းပါ။"
-                    }
-                ]
-            },
-            {
-                id: 7,
-                category: "App Permissions (ခွင့်ပြုချက်များ)",
-                icon: "fa-solid fa-mobile-screen",
-                description: "မြေပြင်သတင်းများ အော့ဖ်လိုင်းဖတ်ရှုနိုင်ဖို့ စစာဖတ်အက်ပ် (PDF Reader) အသစ်တစ်ခုကို ယုံကြည်ရတဲ့ Community Portal ကနေ ဒေါင်းလုဒ်လုပ်လိုက်ပါတယ်။ ဒါပေမဲ့ အက်ပ်က ဖုန်းခေါ်ဆိုမှုမှတ်တမ်း၊ ကင်မရာနဲ့ တည်နေရာ (GPS) သုံးစွဲခွင့်တွေကို ချက်ချင်းတောင်းခံလာပါတယ်။ သင် ဘာလုပ်မလဲ။",
-                choices: [
-                    {
-                        text: "ခွင့်ပြုချက်များကို စစ်ဆေးပြီး အက်ပ်လုပ်ဆောင်ချက်နှင့် မသက်ဆိုင်သည့် ကင်မရာ၊ မိုက်ကရိုဖုန်းနှင့် တည်နေရာတောင်းခံမှုများကို 'Deny' ငြင်းပယ်မည်။",
-                        secMod: 30,
-                        riskMod: -20,
-                        title: "အလွန်အမြော်အမြင်ရှိပါသည်!",
-                        explanation: "အက်ပ်ခွင့်ပြုချက် (App Permissions) များကို တင်းကျပ်စွာ စစ်ဆေးကန့်သတ်ခြင်းသည် သင့်စက်အတွင်းရှိ အရေးကြီးဒေတာများ မပေါက်ကြားစေရန် ပထမဦးဆုံး ခံစစ်စည်းအဖြစ် အကာအကွယ်ပေးခြင်း ဖြစ်သည်။",
-                        sound: "success",
-                        advice: "အက်ပ်ခွင့်ပြုချက် (Permissions) များကို တင်းကျပ်စွာ စစ်ဆေးကန့်သတ်ခြင်းကို ဆက်လက်ဆောင်ရွက်ပါ။"
-                    },
-                    {
-                        text: "အလုပ်အဆင်ပြေစေရန် ၎င်းတောင်းခံသမျှ ခွင့်ပြုချက် (Permissions) အားလုံးကို 'Allow' ပေး၍ အသုံးပြုမည်။",
-                        secMod: -25,
-                        riskMod: 30,
-                        title: "လုံခြုံရေး လုံးဝမရှိတော့ပါ!",
-                        explanation: "ကီးဘုတ် သို့မဟုတ် PDF reader ကဲ့သို့ သာမန်အက်ပ်များသည် ကင်မရာ သို့မဟုတ် မိုက်ကရိုဖုန်း ခွင့်ပြုချက် မလိုအပ်ပါ။ ၎င်းတို့ကို ပေးအပ်လိုက်ပါက နောက်ကွယ်မှ သင့်လုပ်ဆောင်ချက်များကို အလွယ်တကူ ခိုးယူမှတ်တမ်းတင်သွားနိုင်ပါသည်။",
-                        sound: "danger",
-                        advice: "အက်ပ်တောင်းသမျှ ခွင့်ပြုချက်အားလုံးကို 'Allow' လုံးဝမပေးပါနှင့်။ PDF reader ကဲ့သို့သော အက်ပ်များအတွက် ကင်မရာ/မိုက်ကရိုဖုန်းကို ပိတ်ထားပါ။"
-                    },
-                    {
-                        text: "တရားဝင်မေးမြန်းနေခြင်းဖြစ်သဖြင့် ဖုန်းခေါ်ဆိုခွင့်တစ်ခုတည်းကိုသာ Allow ပေးပြီး ကျန်တာကို ပိတ်ထားမည်။",
-                        secMod: 10,
-                        riskMod: 15,
-                        title: "သတိပြုရန် လိုအပ်ပါသည်!",
-                        explanation: "ဖုန်းခေါ်ဆိုခွင့် ခွင့်ပြုချက်ပေးလိုက်ခြင်းသည်ပင် သင့်ဖုန်းခေါ်ဆိုမှုမှတ်တမ်းနှင့် အဆက်အသွယ် (Contacts) များကို အဆိုပါ အက်ပ်နောက်ကွယ်မှ လှမ်းယူခွင့်ပြုလိုက်ခြင်း ဖြစ်သည်။",
-                        sound: "danger",
-                        advice: "ဖုန်းခေါ်ဆိုမှုခွင့်ပြုချက်သည်ပင် Contacts ဒေတာများကို ပေါက်ကြားစေနိုင်သဖြင့် အက်ပ်နှင့်မသက်ဆိုင်ပါက လုံးဝမပေးပါနှင့်။"
-                    }
-                ]
-            },
-            {
-                id: 8,
-                category: "Data Security Lifecycle (ဒေတာလုံခြုံရေး)",
-                icon: "fa-solid fa-server",
-                description: "မိတ်ဆွေတစ်ဦးက အရေးကြီး HRV ရုပ်သံသက်သေတွေကို သင့်ဆီပေးပို့ဖို့ လုံခြုံတဲ့ Signal ကို သုံးပြီးပို့လိုက်ပါတယ်။ ဒါပေမဲ့ ပို့လိုက်တဲ့ ဗီဒီယိုကို ဖုန်းထဲက သာမန် Video Player အက်ပ်နဲ့ ဖွင့်ကြည့်ပြီး ဒေါင်းလုဒ်ဆွဲသိမ်းဖို့ အကြံပြုလာပါတယ်။ သင် ဘာလုပ်မလဲ။",
-                choices: [
-                    {
-                        text: "Signal ထဲကနေပဲ တိုက်ရိုက်ကြည့်ရှုပြီး လိုအပ်ပါက Device Encryption သုံးထားတဲ့စနစ် သို့မဟုတ် Cryptomator သေတ္တာထဲသို့ တိုက်ရိုက်ရွှေ့သိမ်းမည်။ သာမန် Player များက ဒေတာခိုးယူနိုင်သည်ကို သတိပြုမည်။",
-                        secMod: 30,
-                        riskMod: -20,
-                        title: "အလွန်ဘေးကင်းလုံခြုံပါသည်!",
-                        explanation: "ဒေတာကို ပေးပို့နေစဉ် (In transit) တွင် Signal ဖြင့် ကာကွယ်ထားသော်လည်း ဖုန်းထဲသို့ ဒေါင်းလုဒ်ဆွဲပြီး သာမန် Player များနှင့် ဖွင့်ကြည့်ပါက သိုလှောင်ထားသောဒေတာ (Data at rest) အဆင့်တွင် လုံခြုံမှုမရှိဘဲ ခိုးယူခံရနိုင်ပါသည်။",
-                        sound: "success",
-                        advice: "ပေးပို့စဉ်ရော သိမ်းဆည်းစဉ်ပါ ဒေတာများကို အမြဲ Encrypt ပြုလုပ်ကာ သန့်စင်ထားပါ။"
-                    },
-                    {
-                        text: "ဖုန်းထဲသို့ ဒေါင်းလုဒ်ဆွဲပြီး သာမန် Photo Gallery သို့မဟုတ် ဒေါင်းလုဒ် Folder ထဲတွင် လွယ်လွယ်ကူကူ သိမ်းဆည်းထားမည်။",
-                        secMod: -20,
-                        riskMod: 30,
-                        title: "ဒေတာ ပေါက်ကြားသွားနိုင်သည်!",
-                        explanation: "သာမန် Gallery နှင့် ဒေါင်းလုဒ် Folder များတွင် သိမ်းဆည်းထားပါက အခြားသော မသင်္ကာဖွယ်အက်ပ်များမှတစ်ဆင့် ဓာတ်ပုံနှင့် ဗီဒီယိုများကို လှမ်းယူခွင့်ရရှိသွားစေနိုင်သဖြင့် အန္တရာယ်ကြီးမားလှပါသည်။",
-                        sound: "danger",
-                        advice: "ဒေါင်းလုဒ်ဆွဲထားသော HRV ဖိုင်များကို သာမန် Gallery သို့မဟုတ် ဒေါင်းလုဒ် Folder ထဲတွင် လုံးဝမထားပါနှင့်။ Encrypted Vault ထဲတွင်သာ ထည့်ပါ။"
-                    },
-                    {
-                        text: "Signal ထဲတွင်ပဲ သိမ်းထားပြီး မည်သည့် စကားဝှက် သို့မဟုတ် ဖုန်းလော့ခ်မှ မခံဘဲ လုပ်ဖော်ကိုင်ဖက်များကို လိုအပ်ပါက ချက်ချင်းပြသနိုင်အောင် ပြင်ဆင်ထားမည်။",
-                        secMod: 5,
-                        riskMod: 15,
-                        title: "သတိပြုရန် လိုအပ်ပါသည်!",
-                        explanation: "Signal ထဲတွင် သိမ်းဆည်းထားခြင်းက ကောင်းမွန်သော်လည်း ဖုန်းလော့ခ် မခံထားခြင်း သို့မဟုတ် Signal App လော့ခ် မခံထားပါက ဖုန်းအသိမ်းခံရချိန်တွင် စစ်ဆေးသူများက အလွယ်တကူ ဖွင့်ကြည့်သွားနိုင်ပါသည်။",
-                        sound: "danger",
-                        advice: "Signal ထဲတွင် သိမ်းထားသော်လည်း ဖုန်းလော့ခ် သို့မဟုတ် Signal App လော့ခ် မရှိပါက ပေါက်ကြားလွယ်သဖြင့် App screen-lock ကို ဖွင့်ပါ။"
-                    }
-                ]
-            },
-            {
-                id: 9,
-                category: "Two-Factor Authentication (နှစ်ဆင့်ခံစစ်)",
-                icon: "fa-solid fa-shield-halved",
-                description: "အဖွဲ့အစည်းရဲ့ အရေးကြီး Cloud အကောင့်တစ်ခုထဲကို ဝင်ရောက်ဖို့ ဟက်ကာတစ်ဦးက သင့်စကားဝှက်ကို နည်းလမ်းတစ်ခုခုနဲ့ ရရှိသွားခဲ့ပါတယ်။ ဒါပေမဲ့ သင့်ဆီကို ရုတ်တရက် Authenticator App ကနေ ကိန်းဂဏန်းအသစ်တစ်ခု တောင်းခံတဲ့ အသိပေးချက်တစ်ခု ရောက်လာပါတယ်။ သင် ဘာလုပ်မလဲ။",
-                choices: [
-                    {
-                        text: "စကားဝှက် ပေါက်ကြားသွားပြီဖြစ်ကြောင်း သတိပြုပြီး ချက်ချင်း အကောင့်ထဲဝင်ကာ စကားစု (Passphrase) အသစ်တစ်ခုသို့ အမြန်ဆုံးပြောင်းလဲပစ်မည်။",
-                        secMod: 35,
-                        riskMod: -25,
-                        title: "အထူးကောင်းမွန်သော တုံ့ပြန်မှု ဖြစ်သည်!",
-                        explanation: "စကားဝှက် သိရှိသွားသော်လည်း Authenticator App ကနေ ဒုတိယအဆင့် အစောင့်အကြပ် (2FA) ခံထားခြင်းကြောင့် ဟက်ကာမှာ ဝင်ရောက်နိုင်ခြင်းမရှိပါ။ သို့သော် စကားဝှက်ပေါက်ကြားနေသဖြင့် ချက်ချင်း ပြောင်းလဲရပါမည်။",
-                        sound: "success",
-                        advice: "Authenticator App သုံးပြီး နှစ်ဆင့်ခံစစ် (2FA) ကို စနစ်တကျ အမြဲအသုံးပြုပါ။"
-                    },
-                    {
-                        text: "အကောင့်ထဲသို့ အခြားသူတစ်ဦးက လှမ်းဝင်နေခြင်းဖြစ်နိုင်သဖြင့် ၎င်းတောင်းခံနေသော နှစ်ဆင့်ခံကုဒ်ကို မက်ဆေ့ခ်ျကနေတစ်ဆင့် အဆိုပါအကောင့်ပိုင်ရှင် ဟုတ်မဟုတ် မေးမြန်းလာသူထံ ပေးပို့လိုက်မည်။",
-                        secMod: -30,
-                        riskMod: 35,
-                        title: "အကောင့် လုံးဝ ဆုံးရှုံးသွားပါပြီ!",
-                        explanation: "နှစ်ဆင့်ခံကုဒ် (2FA) ကို မည်သူတစ်ဦးတစ်ယောက်ကိုမျှ ပေးပို့ခြင်းမပြုရပါ။ ၎င်းကို တိုက်ခိုက်သူထံ ပေးလိုက်ပါက ၎င်းတို့သည် သင့်အကောင့်ထဲသို့ ချက်ချင်းဝင်ရောက်ပြီး သင့်ကို ပိတ်ထုတ်ပစ်ပါလိမ့်မည်။",
-                        sound: "danger",
-                        advice: "နှစ်ဆင့်ခံကုဒ် (2FA OTP) များကို မည်သူတစ်ဦးတစ်ယောက်ကိုမျှ လုံးဝမဝေမျှပါနှင့်။ ချက်ချင်း အကောင့်လော့ခ်ကျသွားပါလိမ့်မည်။"
-                    },
-                    {
-                        text: "အက်ပ်က ကိန်းဂဏန်းတွေ တောင်းနေတာကို ဂရုမစိုက်ဘဲ ထားလိုက်မည်။ 2FA ခံထားသဖြင့် မည်သို့မျှ ဝင်ရောက်နိုင်မည် မဟုတ်ဟု စိတ်အေးလက်အေး နေမည်။",
-                        secMod: -10,
-                        riskMod: 15,
-                        title: "သတိပြုရန် လိုအပ်ပါသည်!",
-                        explanation: "2FA က သင့်ကို တစ်ကြိမ် ကာကွယ်ပေးထားသော်လည်း စကားဝှက် ပေါက်ကြားနေမှုကို ချက်ချင်း မပြုပြင်ပါက နောက်တစ်ကြိမ်တွင် Phishing သို့မဟုတ် အခြားနည်းလမ်းများဖြင့် ဝင်ရောက်ရန် ဆက်လက် ကြိုးစားခံရနိုင်ပါသည်။",
-                        sound: "danger",
-                        advice: "စကားဝှက်ပေါက်ကြားနေသည်ဟု 2FA က သတိပေးပါက ဂရုမစိုက်ဘဲမနေပါနှင့်။ စကားစု (Passphrase) ကို ချက်ချင်း ပြောင်းလဲပစ်ပါ။"
-                    }
-                ]
-            },
-            {
-                id: 10,
-                category: "App Updates & Security Patches (အပ်ဒိတ်)",
-                icon: "fa-solid fa-wrench",
-                description: "သင့်ဖုန်းရဲ့ စနစ်က လုံခြုံရေးချို့ယွင်းချက်တွေကို ပြုပြင်ပေးမယ့် လုံခြုံရေးအပ်ဒိတ် (Security Patch Update) တစ်ခု တောင်းခံလာပါတယ်။ ဒါပေမဲ့ သင့်မှာ အရေးကြီးလှုပ်ရှားမှုတွေ လုပ်ဆောင်နေရပြီး အင်တာနက်လိုင်း ကောင်းမွန်နေချိန် ဖြစ်ပါတယ်။ သင် ဘာလုပ်ဆောင်မည်နည်း။",
-                choices: [
-                    {
-                        text: "ဟက်ကာများ ဝင်ရောက်နိုင်သည့် လုံခြုံရေးအားနည်းချက်များကို ဖာထေး (Patch) ရန်အတွက် ယုံကြည်ရသော ကွန်ရက်တစ်ခုအောက်တွင် စနစ် (OS Update) ကို ချက်ချင်း အပ်ဒိတ်လုပ်မည်။",
-                        secMod: 30,
-                        riskMod: -20,
-                        title: "အလွန်မှန်ကန်သော လုပ်ဆောင်ချက် ဖြစ်သည်!",
-                        explanation: "လုံခြုံရေး အပ်ဒိတ်များ မလုပ်ဆောင်ခြင်းသည် ဟက်ကာများနှင့် စပိုင်ဝဲလ်များ ခိုးယူဝင်ရောက်ရန် အဓိက လမ်းစဖြစ်စေပါသည်။ ချို့ယွင်းချက်များကို စဉ်ဆက်မပြတ် ဖာထေးထားခြင်းသည် အကောင်းဆုံး ခံစစ်စည်း ဖြစ်သည်။",
-                        sound: "success",
-                        advice: "စနစ်လုံခြုံရေး အားနည်းချက်များကို အမြဲ Update လုပ်ပြီး Security Patches များဖြင့် ဖာထေးပါ။"
-                    },
-                    {
-                        text: "အပ်ဒိတ်လုပ်ပါက ဖုန်းက ဟန်းသွားနိုင်သဖြင့် သို့မဟုတ် ဖိုင်များ ပျက်သွားနိုင်သဖြင့် အပ်ဒိတ်တောင်းဆိုမှုကို လုံးဝ ငြင်းပယ် (Ignore) ထားမည်။",
-                        secMod: -25,
-                        riskMod: 30,
-                        title: "စက်ပစ္စည်း လုံခြုံမှုမရှိတော့ပါ!",
-                        explanation: "လုံခြုံရေး အပ်ဒိတ်များကို လျစ်လျူရှုထားခြင်းသည် အန္တရာယ်ရှိသော Spyware (Pegasus ကဲ့သို့) များက သင့်ဖုန်း၏ စနစ်အားနည်းချက်ကို အလွယ်တကူ အသုံးချပြီး ဝင်ရောက်စောင့်ကြည့်သွားစေနိုင်ပါသည်။",
-                        sound: "danger",
-                        advice: "လုံခြုံရေး အပ်ဒိတ်များကို လျစ်လျူမရှုပါနှင့်။ Pegasus ကဲ့သို့ စပိုင်ဝဲလ်များမှာ အပ်ဒိတ်မလုပ်ထားသော စနစ်အားနည်းချက်များကို အလွယ်တကူ တိုက်ခိုက်နိုင်ပါသည်။"
-                    },
-                    {
-                        text: "ဖုန်းအပ်ဒိတ်လုပ်မည့်အစား အွန်လိုင်းတွင် ရရှိနိုင်သော တတိယအဖွဲ့အစည်း (Third-party) ဖုန်းသန့်စင်ရေး (Phone Cleaner/Antivirus) ဆော့ဖ်ဝဲလ်တစ်ခုကို ဒေါင်းလုဒ်လုပ်ကာ ရှင်းလင်းမည်။",
-                        secMod: -15,
-                        riskMod: 20,
-                        title: "အန္တရာယ် ပိုမိုများပြားစေနိုင်သည်!",
-                        explanation: "ယုံကြည်ရမှုမရှိသော တတိယအဖွဲ့အစည်းသန့်စင်ရေး အက်ပ်များသည် လုံခြုံရေးချို့ယွင်းချက်ကို မပြင်ပေးနိုင်သည့်အပြင် ၎င်းတို့ကိုယ်တိုင်က ဖုန်း၏ လျှို့ဝှက်ချက်များကို ခိုးယူစောင့်ကြည့်မည့် မဲလ်ဝဲလ်များ ဖြစ်နေတတ်ပါသည်။",
-                        sound: "danger",
-                        advice: "Antivirus သို့မဟုတ် Cleaner အတုအယောင်များ ဒေါင်းလုဒ်ဆွဲခြင်းကို ရှောင်ကြဉ်ပါ။ ၎င်းတို့ကိုယ်တိုင်က မဲလ်ဝဲလ် ဖြစ်နေနိုင်ပါသည်။"
-                    }
+                title: "မဲလ်ဝဲလ်/စပိုင်ဝဲလ် သို့မဟုတ် Phishing တိုက်ခိုက်မှု ခံလိုက်ရပြီ!",
+                desc: "ဖုန်း သို့မဟုတ် ကွန်ပျူတာထဲတွင် သံသယဖြစ်ဖွယ် ဆော့ဖ်ဝဲလ်ဝင်နေကြောင်း တွေ့ရှိပါက ဆောင်ရွက်ရမည့်အစဉ်လိုက်။",
+                actions: [
+                    { id: 'S2-A1', text: "ဖုန်း သို့မဟုတ် ကွန်ပျူတာကို အင်တာနက်၊ ဝိုင်ဖိုင် နှင့် ဘလူးတုသ်တို့မှ ချက်ချင်းဖြတ်တောက်ပါ (Airplane Mode ဖွင့်ပါ)", order: 1 },
+                    { id: 'S2-A2', text: "ထိခိုက်မှုမဖြစ်စေရန် အခြားအကောင့်များနှင့် အရေးကြီးဒေတာများ ချက်ဆက်ထားခြင်းကို ရပ်တန့်ပါ", order: 2 },
+                    { id: 'S2-A3', text: "ယုံကြည်ရသော Antivirus ဖြင့် Scan ဖတ်ပါ သို့မဟုတ် ကျွမ်းကျင်သူနှင့် တိုင်ပင်၍ Factory Reset ပြုလုပ်ပါ", order: 3 }
                 ]
             }
         ];
 
-        // Active game variables
-        let activeQuests = [];
-        let currentQuestIndex = 0;
-        let securityHealth = 50;
-        let riskExposure = 30;
-        let currentShuffledChoices = []; // Store dynamically shuffled choices for the active question
-        let stepResults = []; // Track correct (true) or incorrect (false) for each level 1-10
-        let playedQuests = []; // Track actual questions played and player selected choices for Dynamic Action Plan
-        let choiceLocked = false; // Flag to prevent changing answer or double clicking once chosen
-
-        // Shuffle utility (Fisher-Yates) and select ALL 10 quests randomized for complete game loop
-        function setupGameQuests() {
-            const shuffled = [...questRepository];
-            for (let i = shuffled.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-            }
-            activeQuests = shuffled; // All 10 levels
-            stepResults = Array(activeQuests.length).fill(null); // Init results map
-            playedQuests = []; // Reset selected record tracking
+        function pushAlert(msg, type='info') {
+            const container = document.getElementById('alert-container');
+            if (!container) return;
+            const alert = document.createElement('div');
+            const colors = {
+                info: 'bg-teal-950 border-teal-500 text-teal-400',
+                warn: 'bg-amber-950 border-amber-500 text-amber-400',
+                err: 'bg-red-950 border-red-500 text-red-400'
+            };
+            alert.className = `${colors[type]} border px-4 py-2 rounded-lg text-[11px] shadow-2xl animate-fade pointer-events-auto flex items-center justify-between min-w-[200px]`;
+            alert.innerHTML = `<span>${msg}</span><button onclick="this.parentElement.remove()" class="ml-4 opacity-50 font-bold">×</button>`;
+            container.appendChild(alert);
+            setTimeout(() => { if(alert) alert.remove(); }, 4000);
         }
 
-        // Fisher-Yates shuffle algorithm for answer choices
-        function shuffleArray(array) {
-            const shuffled = [...array];
-            for (let i = shuffled.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-            }
-            return shuffled;
+        function nextStage(num) {
+            document.querySelectorAll('.stage-section').forEach(s => s.classList.add('hidden'));
+            document.getElementById(`stage-${num}`).classList.remove('hidden');
+            stage = num;
+            
+            // Progress percentage
+            let progress = 10;
+            if(num === 1) progress = 30;
+            if(num === 2) progress = 50;
+            if(num === 3) progress = 75;
+            if(num === 4) progress = 100;
+            
+            document.getElementById('global-progress').style.width = progress + '%';
+            document.getElementById('progress-text').innerText = progress + '%';
+            document.getElementById('global-score').innerText = score.toString().padStart(3, '0');
+
+            if(num === 1) renderStage1();
+            if(num === 3) initCrisisSimulation();
         }
 
-        // Generate Step Tracker Dots Dynamically based on current status
-        function renderStepTracker() {
-            const container = document.getElementById('step-dots-container');
+        // STAGE 1: THREAT ASSESSMENT
+        function renderStage1() {
+            const pool = document.getElementById('threat-pool');
+            const listDevices = document.getElementById('list-devices');
+            const listData = document.getElementById('list-data');
+            const listComms = document.getElementById('list-comms');
+
+            pool.innerHTML = '';
+            listDevices.innerHTML = '';
+            listData.innerHTML = '';
+            listComms.innerHTML = '';
+
+            threats.forEach(t => {
+                if(!s1Selection[t.id]) {
+                    const card = document.createElement('div');
+                    card.className = "bg-slate-800/50 border border-slate-700 p-3 rounded-xl flex flex-col justify-between gap-3 hover:border-teal-500/50 transition-all";
+                    card.innerHTML = `
+                        <p class="text-[11px] leading-relaxed">${t.title}</p>
+                        <div class="grid grid-cols-3 gap-1 border-t border-slate-800 pt-2">
+                            <button onclick="moveThreat(${t.id}, 'devices')" class="bg-slate-900 border border-teal-900 hover:border-teal-500 text-[9px] py-1 rounded text-teal-400 font-bold">Devices</button>
+                            <button onclick="moveThreat(${t.id}, 'data')" class="bg-slate-900 border border-amber-900 hover:border-amber-500 text-[9px] py-1 rounded text-amber-400 font-bold">Data</button>
+                            <button onclick="moveThreat(${t.id}, 'comms')" class="bg-slate-900 border border-blue-900 hover:border-blue-500 text-[9px] py-1 rounded text-blue-400 font-bold">Comms</button>
+                        </div>
+                    `;
+                    pool.appendChild(card);
+                } else {
+                    const cat = s1Selection[t.id];
+                    const target = document.getElementById(`list-${cat}`);
+                    const badge = document.createElement('div');
+                    badge.className = "bg-slate-900 border border-teal-500/30 px-2.5 py-1 rounded text-[10px] flex items-center animate-fade justify-between w-full mb-1";
+                    badge.innerHTML = `<span class="truncate">${t.title.substring(0, 30)}...</span> <button onclick="removeThreat(${t.id})" class="ml-2 text-red-500 font-bold">×</button>`;
+                    target.appendChild(badge);
+                }
+            });
+
+            document.getElementById('s1-count').innerText = Object.keys(s1Selection).length;
+        }
+
+        function moveThreat(id, cat) {
+            s1Selection[id] = cat;
+            renderStage1();
+        }
+
+        function removeThreat(id) {
+            delete s1Selection[id];
+            renderStage1();
+        }
+
+        function validateStage1() {
+            if(Object.keys(s1Selection).length < 9) {
+                pushAlert("ခြိမ်းခြောက်မှု (၉) ခုလုံးကို အုပ်စုခွဲပေးပါ", "warn");
+                return;
+            }
+            
+            let correct = 0;
+            threats.forEach(t => {
+                if(s1Selection[t.id] === t.cat) correct++;
+            });
+
+            if(correct === 9) {
+                score += 30;
+                pushAlert("အပြည့်အဝ မှန်ကန်ပါသည်! +30 Points", "info");
+                nextStage(2);
+            } else {
+                pushAlert(`${correct} ခုသာ မှန်ကန်ပါသေးသည်။ ပြန်လည်စစ်ဆေးပါ။`, "err");
+            }
+        }
+
+        function resetStage1() {
+            s1Selection = {};
+            renderStage1();
+        }
+
+        // STAGE 2: PILLARS BUILDER (REFINED PASSWORD STRENGTH & INLINE 2FA METHOD)
+        function checkPasswordStrength() {
+            const pwd = document.getElementById('pwd-tester').value;
+            const bar = document.getElementById('pwd-strength-bar');
+            const txt = document.getElementById('pwd-strength-txt');
+            const status = document.getElementById('pillar1-status');
+            
+            let criteriaMet = 0;
+            let hasMinLength = pwd.length >= 8;
+            let hasUpper = /[A-Z]/.test(pwd);
+            let hasLower = /[a-z]/.test(pwd);
+            let hasDigit = /[0-9]/.test(pwd);
+            let hasSpecial = /[^A-Za-z0-9]/.test(pwd);
+
+            if (hasMinLength) criteriaMet++;
+            if (hasUpper) criteriaMet++;
+            if (hasLower) criteriaMet++;
+            if (hasDigit) criteriaMet++;
+            if (hasSpecial) criteriaMet++;
+
+            let strengthPercent = (criteriaMet / 5) * 100;
+            bar.style.width = strengthPercent + "%";
+            
+            if (pwd.length === 0) {
+                bar.className = "bg-slate-700 h-full";
+                bar.style.width = "0%";
+                txt.textContent = "စကားဝှက် ရိုက်ထည့်ပါ";
+                txt.className = "font-bold text-slate-500 text-2xs";
+                status.innerHTML = `<span class="text-red-400 font-bold"><i class="fa-solid fa-circle-xmark mr-1"></i> မပြည့်စုံသေးပါ</span>`;
+                isPillar1Done = false;
+            } else if (pwd.length < 8) {
+                bar.className = "bg-red-500 h-full transition-all duration-300";
+                txt.textContent = "အားနည်းလွန်းသည် (အနည်းဆုံး စာလုံးရေ ၈ လုံး ရှိရမည်)";
+                txt.className = "font-bold text-red-500 text-2xs";
+                status.innerHTML = `<span class="text-red-400 font-bold"><i class="fa-solid fa-circle-xmark mr-1"></i> မပြည့်စုံသေးပါ</span>`;
+                isPillar1Done = false;
+            } else if (criteriaMet < 4) {
+                bar.className = "bg-amber-500 h-full transition-all duration-300";
+                txt.textContent = "အသင့်အတင့်ရှိ (ဂဏန်း၊ စာလုံးကြီး/သေး၊ အထူးစာလုံးများ စုံလင်အောင်ထည့်ပါ)";
+                txt.className = "font-bold text-amber-500 text-2xs";
+                status.innerHTML = `<span class="text-amber-400 font-bold"><i class="fa-solid fa-circle-exclamation mr-1"></i> မပြည့်စုံသေးပါ</span>`;
+                isPillar1Done = false;
+            } else {
+                bar.className = "bg-emerald-500 h-full transition-all duration-300";
+                txt.textContent = "အလွန်ခိုင်မာသည် (Bulletproof!)";
+                txt.className = "font-bold text-emerald-400 text-2xs";
+                status.innerHTML = `<span class="text-emerald-400 font-bold"><i class="fa-solid fa-circle-check mr-1"></i> ခိုင်မာစွာ ကာကွယ်ထားပြီး</span>`;
+                isPillar1Done = true;
+            }
+        }
+
+        function generateStrongPassword() {
+            const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+";
+            let pwd = "";
+            for (let i = 0; i < 12; i++) {
+                pwd += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            document.getElementById('pwd-tester').value = pwd;
+            checkPasswordStrength();
+            pushAlert("လုံခြုံသော ပတ်စ်ဝပ်တစ်ခု ဖန်တီးပြီးပါပြီ။", "info");
+        }
+
+        function update2FAMethod() {
+            const selectedMethod = document.getElementById('stage2-2fa-method').value;
+            const status = document.getElementById('pillar2-status');
+            if (isPillar2Done && selectedMethod) {
+                status.innerHTML = `<span class="text-emerald-400 font-bold"><i class="fa-solid fa-circle-check mr-1"></i> ခိုင်မာစွာ ဖွင့်ထားပြီး (${selectedMethod})</span>`;
+            }
+        }
+
+        function toggle2FA() {
+            const dot = document.getElementById('dot-2fa');
+            const btn = document.getElementById('btn-toggle-2fa');
+            const status = document.getElementById('pillar2-status');
+            const selectedMethod = document.getElementById('stage2-2fa-method').value;
+
+            if (!selectedMethod) {
+                pushAlert("ကျေးဇူးပြု၍ အဆင့်နှစ်ဆင့်ခံလုံခြုံရေး (2FA) အသုံးပြုမည့် နည်းလမ်းကို ဦးစွာရွေးချယ်ပေးပါ!", "warn");
+                return;
+            }
+
+            isPillar2Done = !isPillar2Done;
+
+            if (isPillar2Done) {
+                btn.className = "w-10 h-5 bg-teal-500 rounded-full p-1 relative transition-colors";
+                dot.className = "w-3 h-3 bg-white rounded-full transition-transform transform translate-x-5";
+                status.innerHTML = `<span class="text-emerald-400 font-bold"><i class="fa-solid fa-circle-check mr-1"></i> ခိုင်မာစွာ ဖွင့်ထားပြီး (${selectedMethod})</span>`;
+                pushAlert(`2FA စနစ်ကို ဖွင့်လှစ်တပ်ဆင်လိုက်ပါပြီ (${selectedMethod})။`, "info");
+            } else {
+                btn.className = "w-10 h-5 bg-slate-700 rounded-full p-1 relative transition-colors";
+                dot.className = "w-3 h-3 bg-slate-300 rounded-full transition-transform transform translate-x-0";
+                status.innerHTML = `<span class="text-red-400 font-bold"><i class="fa-solid fa-circle-xmark mr-1"></i> မပြည့်စုံသေးပါ</span>`;
+            }
+        }
+
+        function runSoftwareUpdate() {
+            const bar = document.getElementById('update-bar');
+            const txt = document.getElementById('update-percent');
+            const btn = document.getElementById('btn-update-software');
+            const status = document.getElementById('pillar3-status');
+            
+            btn.disabled = true;
+            btn.className = "w-full bg-slate-800 text-slate-500 font-bold py-1.5 rounded text-xs cursor-not-allowed";
+            
+            let updateProgress = 0;
+            const timer = setInterval(() => {
+                updateProgress += 10;
+                bar.style.width = updateProgress + "%";
+                txt.textContent = updateProgress + "%";
+                
+                if (updateProgress >= 100) {
+                    clearInterval(timer);
+                    isPillar3Done = true;
+                    status.innerHTML = `<span class="text-emerald-400 font-bold"><i class="fa-solid fa-circle-check mr-1"></i> ခိုင်မာစွာ ကာကွယ်ထားပြီး</span>`;
+                    btn.textContent = "စနစ်တစ်ခုလုံး အဆင့်မြှင့်တင်ပြီးပြီ";
+                    pushAlert("ဆော့ဖ်ဝဲလ် အဆင့်မြှင့်တင်မှု အောင်မြင်သည်။", "info");
+                }
+            }, 100);
+        }
+
+        function validateStage2() {
+            if (isPillar1Done && isPillar2Done && isPillar3Done) {
+                score += 30;
+                pushAlert("လုံခြုံရေးမဏ္ဍိုင် (၃) ခုစလုံး တည်ဆောက်ပြီးပါပြီ။ +30 Points", "info");
+                
+                // Sync chosen 2FA method to Stage 4 selector
+                const s2Method = document.getElementById('stage2-2fa-method').value;
+                document.getElementById('q-2fa-method').value = s2Method;
+                
+                nextStage(3);
+            } else {
+                let missing = [];
+                if (!isPillar1Done) missing.push("ခိုင်မာသောစကားဝှက်");
+                if (!isPillar2Done) missing.push("အဆင့်နှစ်ဆင့်ခံစနစ် (2FA)");
+                if (!isPillar3Done) missing.push("ဆော့ဖ်ဝဲလ် အဆင့်မြှင့်တင်ခြင်း");
+                pushAlert(`မဏ္ဍိုင်များဖြစ်သော [${missing.join(", ")}] ကို ပြီးမြောက်အောင် ဆောင်ရွက်ပေးပါ။`, "warn");
+            }
+        }
+
+        // STAGE 3: CRISIS SIMULATOR
+        function initCrisisSimulation() {
+            userActionSequence = [];
+            document.getElementById('user-sequence-view').innerHTML = `<span class="text-2xs text-slate-500 bg-slate-900 px-2.5 py-1 rounded border border-slate-800/80">ဘာမှမရွေးရသေးပါ</span>`;
+            
+            const currentScenario = scenarios[currentScenarioIndex];
+            document.getElementById('scenario-title').textContent = currentScenario.title;
+            document.getElementById('scenario-desc').textContent = currentScenario.desc;
+            
+            const container = document.getElementById('action-cards-container');
             container.innerHTML = '';
             
-            for (let i = 0; i < activeQuests.length; i++) {
-                const dot = document.createElement('div');
-                dot.className = "flex items-center justify-center flex-grow relative";
-                
-                // Dot design rules
-                let dotStyle = "w-7 h-7 sm:w-8 sm:h-8 rounded-full text-xs font-bold flex items-center justify-center transition-all duration-300 shadow-sm ";
-                
-                if (i === currentQuestIndex) {
-                    // Active Level
-                    dotStyle += "bg-navy text-cream ring-2 ring-mint active-pulse scale-110";
-                    dot.innerHTML = `<span class="${dotStyle}">${i + 1}</span>`;
-                } else if (stepResults[i] === true) {
-                    // Correct answer (Safe choice)
-                    dotStyle += "bg-mint text-navy";
-                    dot.innerHTML = `<span class="${dotStyle}"><i class="fa-solid fa-check text-[10px]"></i></span>`;
-                } else if (stepResults[i] === false) {
-                    // Incorrect answer (Vulnerable choice)
-                    dotStyle += "bg-red-500 text-cream";
-                    dot.innerHTML = `<span class="${dotStyle}"><i class="fa-solid fa-xmark text-[10px]"></i></span>`;
-                } else {
-                    // Locked/Future level
-                    dotStyle += "bg-gray-300 text-gray-500";
-                    dot.innerHTML = `<span class="${dotStyle}">${i + 1}</span>`;
-                }
-
-                container.appendChild(dot);
-                
-                // Add tiny connect lines between steps except last one
-                if (i < activeQuests.length - 1) {
-                    const line = document.createElement('div');
-                    line.className = `h-1 flex-grow mx-1 min-w-[5px] sm:min-w-[10px] rounded transition-all duration-300 ${i < currentQuestIndex ? 'bg-mint' : 'bg-gray-300'}`;
-                    container.appendChild(line);
-                }
-            }
-        }
-
-        // Start the game loop and transition display states
-        function startGame() {
-            playAudioFeedback('click');
-            setupGameQuests();
-            currentQuestIndex = 0;
-            securityHealth = 50;
-            riskExposure = 30;
-            choiceLocked = false;
-            updateMeters();
+            const shuffledActions = [...currentScenario.actions].sort(() => Math.random() - 0.5);
             
-            document.getElementById('screen-welcome').classList.add('hidden');
-            document.getElementById('screen-quest').classList.remove('hidden');
-            renderQuest();
-        }
-
-        // Render current quest elements dynamically
-        function renderQuest() {
-            choiceLocked = false; // Reset lock state for the new level
-            renderStepTracker();
-            const currentQuest = activeQuests[currentQuestIndex];
-            
-            // Set level indicator
-            document.getElementById('level-indicator').innerText = `အဆင့်: ${currentQuestIndex + 1} / ${activeQuests.length}`;
-            
-            // Set quest elements
-            document.getElementById('quest-category').innerText = currentQuest.category;
-            document.getElementById('quest-description').innerText = currentQuest.description;
-            
-            // Render specific icon if existing
-            const iconContainer = document.getElementById('quest-icon');
-            if (currentQuest.icon) {
-                iconContainer.innerHTML = `<i class="${currentQuest.icon}"></i>`;
-            } else {
-                iconContainer.innerHTML = `<i class="fa-solid fa-shield"></i>`;
-            }
-
-            // Shuffle the choices for this specific render instance
-            currentShuffledChoices = shuffleArray(currentQuest.choices);
-
-            // Generate dynamic buttons in the container (supports 3 choices)
-            const choicesContainer = document.getElementById('choices-container');
-            choicesContainer.innerHTML = ''; // Clear prior buttons
-            
-            const choiceLabels = ['က', 'ခ', 'ဂ'];
-
-            currentShuffledChoices.forEach((choice, index) => {
+            shuffledActions.forEach((act) => {
                 const btn = document.createElement('button');
-                btn.onclick = () => makeChoice(index);
-                btn.className = "w-full text-left bg-white hover:bg-navy-light text-gray-800 border-2 border-navy/10 hover:border-navy p-4 rounded-xl transition-all shadow-sm hover:shadow-md flex items-start gap-4 group transform hover:-translate-y-0.5 active:translate-y-0";
-                
+                btn.id = `act-card-${act.id}`;
+                btn.onclick = () => selectCrisisAction(act);
+                btn.className = "bg-slate-950/80 hover:bg-slate-950 border border-slate-800 p-4 rounded-xl text-left text-xs text-slate-300 transition duration-200 hover:border-teal-500/50 flex flex-col justify-between h-32";
                 btn.innerHTML = `
-                    <span class="bg-navy text-cream font-bold w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 group-hover:bg-mint group-hover:text-navy transition-all">${choiceLabels[index]}</span>
-                    <span class="text-sm sm:text-base font-medium leading-relaxed">${choice.text}</span>
+                    <p class="leading-relaxed font-bold">${act.text}</p>
+                    <span class="text-[9px] text-slate-500 block text-right mt-2"><i class="fa-solid fa-hand-pointer mr-1"></i> နှိပ်ပါ</span>
                 `;
-                choicesContainer.appendChild(btn);
-            });
-        }
-
-        // Handle interactive choice selection based on dynamic index
-        function makeChoice(shuffledIndex) {
-            // Guard clause: If an answer is already selected, prevent any subsequent click actions
-            if (choiceLocked) return;
-            choiceLocked = true; // Lock immediately to prevent changing or double clicking
-
-            const choice = currentShuffledChoices[shuffledIndex];
-
-            // Apply modifiers
-            securityHealth = Math.max(0, Math.min(100, securityHealth + choice.secMod));
-            riskExposure = Math.max(0, Math.min(100, riskExposure + choice.riskMod));
-
-            // Record played questions and answers for Dynamic Action Plan construction
-            playedQuests.push({
-                quest: activeQuests[currentQuestIndex],
-                selectedChoice: choice
+                container.appendChild(btn);
             });
 
-            // Record status results for visual dots map
-            const isCorrect = choice.secMod > 0;
-            stepResults[currentQuestIndex] = isCorrect;
-
-            // Play synthesized audio feedback
-            playAudioFeedback(choice.sound);
-
-            // Update global dashboard meters
-            updateMeters();
-            renderStepTracker();
-
-            // Setup feedback screen content
-            document.getElementById('screen-quest').classList.add('hidden');
-            const feedbackScreen = document.getElementById('screen-feedback');
-            feedbackScreen.classList.remove('hidden');
-
-            const badge = document.getElementById('feedback-badge');
-            const title = document.getElementById('feedback-title');
+            // Reset Timer
+            secondsLeft = 15;
+            document.getElementById('countdown').textContent = secondsLeft;
+            clearInterval(countdownTimer);
             
-            if (isCorrect) {
-                badge.className = "w-24 h-24 rounded-full flex items-center justify-center mb-6 text-5xl shadow-xl bg-mint-light text-mint-dark border-2 border-mint";
-                badge.innerHTML = `<i class="fa-solid fa-shield-halved"></i>`;
-                title.className = "font-serif font-bold text-3xl text-mint-dark mb-3 animate-bounce";
-            } else {
-                badge.className = "w-24 h-24 rounded-full flex items-center justify-center mb-6 text-5xl shadow-xl bg-red-100 text-red-600 border-2 border-red-300";
-                badge.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i>`;
-                title.className = "font-serif font-bold text-3xl text-red-600 mb-3";
-            }
-
-            title.innerText = choice.title;
-            document.getElementById('feedback-explanation').innerText = choice.explanation;
-            
-            // Format stat indicators
-            document.getElementById('feedback-stat-sec').innerText = `လုံခြုံရေး ${choice.secMod >= 0 ? '+' : ''}${choice.secMod}%`;
-            document.getElementById('feedback-stat-sec').className = choice.secMod >= 0 ? "text-mint-dark font-bold text-lg" : "text-red-600 font-bold text-lg";
-            
-            document.getElementById('feedback-stat-risk').innerText = `ဒေတာအန္တရာယ် ${choice.riskMod >= 0 ? '+' : ''}${choice.riskMod}%`;
-            document.getElementById('feedback-stat-risk').className = choice.riskMod >= 0 ? "text-red-600 font-bold text-lg" : "text-mint-dark font-bold text-lg";
-        }
-
-        // Update visual layout bars
-        function updateMeters() {
-            document.getElementById('security-percentage').innerText = `${securityHealth}%`;
-            document.getElementById('security-bar').style.width = `${securityHealth}%`;
-
-            document.getElementById('risk-percentage').innerText = `${riskExposure}%`;
-            document.getElementById('risk-bar').style.width = `${riskExposure}%`;
-        }
-
-        // Advance sequence logic to next scenario card
-        function nextQuest() {
-            playAudioFeedback('click');
-            document.getElementById('screen-feedback').classList.add('hidden');
-            
-            currentQuestIndex++;
-            if (currentQuestIndex < activeQuests.length) {
-                document.getElementById('screen-quest').classList.remove('hidden');
-                renderQuest();
-            } else {
-                showResults();
-            }
-        }
-
-        // Process final calculations and display assessment card
-        function showResults() {
-            renderStepTracker();
-            document.getElementById('screen-result').classList.remove('hidden');
-            
-            document.getElementById('final-security').innerText = `${securityHealth}%`;
-            document.getElementById('final-risk').innerText = `${riskExposure}%`;
-
-            const trophy = document.getElementById('result-trophy');
-            const evaluation = document.getElementById('result-evaluation');
-            const recommendation = document.getElementById('result-recommendation');
-
-            if (securityHealth >= 70 && riskExposure <= 30) {
-                playAudioFeedback('success');
-                trophy.className = "w-24 h-24 rounded-full flex items-center justify-center mb-6 text-5xl bg-mint-light text-mint-dark border-2 border-mint shadow-xl";
-                trophy.innerHTML = `<i class="fa-solid fa-trophy animate-bounce"></i>`;
-                evaluation.innerText = "ဂုဏ်ယူပါသည်။ သင်သည် ဒစ်ဂျစ်တယ်လုံခြုံရေးဆိုင်ရာ ဆုံးဖြတ်ချက်များကို ကောင်းမွန်စွာ ဆုံးဖြတ်နိုင်ခဲ့သဖြင့် မိမိအဖွဲ့အစည်းနှင့် မြေပြင်သက်သေများကို လုံခြုံစွာ ကာကွယ်စောင့်ရှောက်နိုင်စွမ်း ရှိပါသည်။";
-                recommendation.innerText = "သင်သည် အဆင့်မြင့် '၃-၂-၁ ဘက်အပ်ဗျူဟာ'၊ 'ရပ်-စစ်-လုပ်' လုပ်ငန်းစဉ်၊ 'စကားစု (Passphrase)' စံနှုန်းများနှင့် အက်ပ်ခွင့်ပြုချက် (Permissions) settings များကို စနစ်တကျ ကောင်းမွန်စွာ နားလည်အသုံးပြုပြီး ဖြစ်သည်။ လက်တွေ့ဘဝတွင်လည်း ဆက်လက်ထိန်းသိမ်းကျင့်သုံးပါ။";
-            } else {
-                playAudioFeedback('danger');
-                trophy.className = "w-24 h-24 rounded-full flex items-center justify-center mb-6 text-5xl bg-red-100 text-red-600 border-2 border-red-300 shadow-xl";
-                trophy.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i>`;
-                evaluation.innerText = "သတိပြုရန် လိုအပ်ပါသည်။ သင့်ဆုံးဖြတ်ချက်အချို့သည် ဒေတာပေါက်ကြားမှု အန္တရာယ် အလွန်များပြားနေသဖြင့် မြေပြင်လုပ်ငန်းများ၌ အန္တရာယ်ကြီးမားနိုင်ပါသည်။ PowerPoint ပါ လမ်းညွှန်ချက်များကို ပြန်လည်ဆန်းစစ်သင့်သည်။";
-                recommendation.innerText = "စကားဝှက်တိုများအသုံးပြုခြင်း၊ Phishing လင့်ခ်များအား ချက်ချင်းနှိပ်မိခြင်းနှင့် အက်ပ်ခွင့်ပြုချက်များကို စနစ်တကျ မစီမံနိုင်ခြင်းတို့သည် စက်အတွင်းရှိဒေတာများကို အန္တရာယ်ရှိစေပါသည်။ လမ်းညွှန်ချက်များအတိုင်း ချက်ချင်းပြင်ဆင်ပါ။";
-            }
-        }
-
-        // Restart entire loop state
-        function resetGame() {
-            playAudioFeedback('click');
-            currentQuestIndex = 0;
-            securityHealth = 50;
-            riskExposure = 30;
-            choiceLocked = false;
-            updateMeters();
-            
-            document.getElementById('screen-result').classList.add('hidden');
-            document.getElementById('screen-welcome').classList.remove('hidden');
-        }
-
-        // Generate Dynamic Plan based on Actual Player Performance Answers!
-        function generateActionPlanText() {
-            let excellentPoints = [];
-            let criticalFixes = [];
-            let improvements = [];
-
-            playedQuests.forEach((record, index) => {
-                const questCat = record.quest.category;
-                const choiceText = record.selectedChoice.text;
-                const adviceText = record.selectedChoice.advice;
-                const modifier = record.selectedChoice.secMod;
-
-                if (modifier >= 30) {
-                    // Safe choices chosen
-                    excellentPoints.push(`🛡️ [${questCat}]\n  - သင်ပြုလုပ်ခဲ့သော မှန်ကန်သည့်ဆုံးဖြတ်ချက်: "${choiceText}"\n  👉 ဆက်လက်ကျင့်သုံးရန် လမ်းညွှန်ချက်: ${adviceText}`);
-                } else if (modifier < 0) {
-                    // Vulnerable/Risky choices chosen
-                    criticalFixes.push(`❌ [${questCat}]\n  - သင်ပြုလုပ်ခဲ့သော အားနည်းချက်အန္တရာယ်: "${choiceText}"\n  👉 ချက်ချင်းပြင်ဆင်ရန် လုပ်ဆောင်ချက်: ${adviceText}`);
-                } else {
-                    // Semi-safe / Neutral choices chosen
-                    improvements.push(`💡 [${questCat}]\n  - သင်ပြုလုပ်ခဲ့သော ကြားနေဆုံးဖြတ်ချက်: "${choiceText}"\n  👉 ပိုမိုကောင်းမွန်စေရန် အကြံပြုချက်: ${adviceText}`);
+            countdownTimer = setInterval(() => {
+                secondsLeft--;
+                document.getElementById('countdown').textContent = secondsLeft;
+                if (secondsLeft <= 0) {
+                    clearInterval(countdownTimer);
+                    handleCrisisTimeout();
                 }
-            });
-
-            let planText = `======================================================
-                  Be Safe - ကိုယ်ပိုင်ဒစ်ဂျစ်တယ်လုံခြုံရေး အစီရင်ခံစာ
-======================================================
-ဂိမ်းတွင်းဆန်းစစ်ချက်ရလဒ် - 
-လုံခြုံရေးအဆင့် (Security Health): ${securityHealth}%
-အန္တရာယ်ကျန်ရှိမှု (Risk Exposure): ${riskExposure}%
-
-ဒစ်ဂျစ်တယ် အလွှာလိုက်ကာကွယ်ခြင်း (Layered Defense) စနစ်အရ သင်ရွေးချယ်ခဲ့သည့် အဖြေများပေါ်အခြေခံထားသော တိကျသည့် အစီအမံများ -
-
-`;
-
-            if (criticalFixes.length > 0) {
-                planText += `⚠️ ချက်ချင်းပြင်ဆင်ရန်လိုအပ်သော အရေးကြီးအားနည်းချက်များ (Critical Fixes Required)\n`;
-                planText += `------------------------------------------------------\n`;
-                planText += criticalFixes.join('\n\n') + `\n\n`;
-            }
-
-            if (improvements.length > 0) {
-                planText += `💡 လုံခြုံရေးမြှင့်တင်ရန် နောက်ထပ်အကြံပြုချက်များ (Security Improvements Needed)\n`;
-                planText += `------------------------------------------------------\n`;
-                planText += improvements.join('\n\n') + `\n\n`;
-            }
-
-            if (excellentPoints.length > 0) {
-                planText += `🛡️ သင့်တွင်ရှိပြီးသား ကောင်းမွန်သော လုံခြုံရေးအလေ့အကျင့်များ (Strong Defenses Established)\n`;
-                planText += `------------------------------------------------------\n`;
-                planText += excellentPoints.join('\n\n') + `\n\n`;
-            }
-
-            planText += `======================================================\n`;
-            planText += `မြေပြင်တွင် ဘေးကင်းလုံခြုံစွာဖြင့် လုပ်ငန်းများကို စဉ်ဆက်မပြတ် ဆောင်ရွက်နိုင်ကြပါစေ။\n`;
-            planText += `======================================================`;
-
-            return planText;
+            }, 1000);
         }
 
-        // Show Popup Modal with action plan content before download
-        function showActionPlanPopup() {
-            playAudioFeedback('success');
-            const planText = generateActionPlanText();
-            document.getElementById('action-plan-content').innerText = planText;
-            document.getElementById('action-plan-modal').classList.remove('hidden');
+        function selectCrisisAction(action) {
+            if (userActionSequence.some(a => a.id === action.id)) return;
+
+            userActionSequence.push(action);
+            
+            const btn = document.getElementById(`act-card-${action.id}`);
+            btn.className = "bg-slate-900 border border-teal-500/40 p-4 rounded-xl text-left text-xs text-teal-400 opacity-60 cursor-not-allowed flex flex-col justify-between h-32";
+            btn.innerHTML = `
+                <p class="leading-relaxed font-bold">${action.text}</p>
+                <span class="text-[9px] text-teal-400 font-bold block text-right mt-2"><i class="fa-solid fa-circle-check mr-1"></i> အဆင့် ${userActionSequence.length}</span>
+            `;
+
+            const seqView = document.getElementById('user-sequence-view');
+            if (userActionSequence.length === 1) seqView.innerHTML = '';
+            
+            const chip = document.createElement('span');
+            chip.className = "text-[10px] text-teal-300 bg-teal-950 border border-teal-800 px-2.5 py-1 rounded";
+            chip.textContent = `${userActionSequence.length}။ ${action.text.substring(0, 15)}...`;
+            seqView.appendChild(chip);
         }
 
-        // Hide Popup Modal
-        function hideActionPlanPopup() {
-            playAudioFeedback('click');
-            document.getElementById('action-plan-modal').classList.add('hidden');
+        function validateCrisisOrder() {
+            clearInterval(countdownTimer);
+            const currentScenario = scenarios[currentScenarioIndex];
+
+            if (userActionSequence.length < 3) {
+                pushAlert("အဆင့် ၃ ခုစလုံးကို ဆောင်ရွက်ပေးပါ။", "warn");
+                return;
+            }
+
+            let isCorrect = true;
+            for (let i = 0; i < userActionSequence.length; i++) {
+                if (userActionSequence[i].order !== i + 1) {
+                    isCorrect = false;
+                    break;
+                }
+            }
+
+            if (isCorrect) {
+                score += 20;
+                pushAlert("မှန်ကန်ပါသည်! +20 Points", "info");
+                
+                currentScenarioIndex++;
+                if (currentScenarioIndex < scenarios.length) {
+                    setTimeout(() => { initCrisisSimulation(); }, 1500);
+                } else {
+                    setTimeout(() => { nextStage(4); }, 1500);
+                }
+            } else {
+                pushAlert("အစီအစဉ်မမှန်ကန်သေးပါ။ ပြန်လည်ကြိုးစားပါ။", "err");
+                setTimeout(() => { initCrisisSimulation(); }, 1500);
+            }
         }
 
-        // Export/Download basic action plan file dynamically
-        function exportActionPlan() {
-            playAudioFeedback('success');
-            const planText = generateActionPlanText();
-            const blob = new Blob([planText], { type: 'text/plain;charset=utf-8' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'Be_Safe_Digital_Safety_Action_Plan.txt';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
+        function handleCrisisTimeout() {
+            pushAlert("အချိန်ကုန်သွားပါပြီ။ ပြန်လည်စတင်ပါမည်။", "err");
+            setTimeout(() => { initCrisisSimulation(); }, 1500);
+        }
+
+        // STAGE 4: PLAYBOOK GENERATOR
+        function generatePlaybook() {
+            const risk = document.getElementById('q-risk').value;
+            const assets = document.getElementById('q-assets').value;
+            const trigger = document.getElementById('q-trigger').value || "အရေးပေါ်အခြေအနေ";
+            const enc = document.getElementById('q-enc').value;
+            const safeword = document.getElementById('q-safeword').value || "အကူအညီလိုသည်";
+            const method2fa = document.getElementById('q-2fa-method').value;
+
+            const resultDiv = document.getElementById('playbook-result');
+            resultDiv.innerHTML = `
+                <div class="h-full flex flex-col justify-between space-y-4 animate-fade text-left">
+                    <div class="border-l-4 border-teal-500 pl-4 space-y-4">
+                        <h3 class="text-teal-400 font-bold uppercase text-sm tracking-widest">Digital Defense Strategy Manual</h3>
+                        
+                        <div class="space-y-2">
+                            <p class="text-[10px] text-slate-500 uppercase font-mono tracking-tighter underline">၁။ အန္တရာယ်အဆင့်နှင့် ဦးစားပေး</p>
+                            <p class="text-[11px] leading-relaxed text-slate-300">
+                                သင်၏ အန္တရာယ်အဆင့်မှာ <span class="text-amber-500 font-bold">${risk}</span> ဖြစ်သောကြောင့် 
+                                <span class="text-teal-400 font-bold">${assets}</span> များကို နေ့စဉ် Backup လုပ်ရန်နှင့် Backup မလုပ်ထားသော ဒေတာများကို ဖုန်းပေါ်တွင် လုံးဝမထားရန် အကြံပြုသည်။
+                            </p>
+                        </div>
+
+                        <div class="space-y-2">
+                            <p class="text-[10px] text-slate-500 uppercase font-mono tracking-tighter underline">၂။ နည်းဗျူဟာပိုင်းဆိုင်ရာ တုံ့ပြန်မှုနှင့် 2FA စနစ်</p>
+                            <p class="text-[11px] leading-relaxed text-slate-300">
+                                <span class="text-red-500 font-bold font-semibold underline">${trigger}</span> ဖြစ်ပွားပါက ၅ မိနစ်အတွင်း အောက်ပါတို့ကို လုပ်ဆောင်ပါ-
+                                <br>• Signal/Telegram မှ 'Clear History/Cache' လုပ်ဆောင်ခြင်း။
+                                <br>• 'Log out all devices' ပြုလုပ်ခြင်း။
+                                <br>• အဖွဲ့သားများထံသို့ လျှို့ဝှက်စကားလုံး <span class="text-teal-400 font-bold">"${safeword}"</span> အား ပေးပို့ခြင်း။
+                                <br>• သင်၏ အပိုဆောင်း <span class="text-teal-300 font-bold">"${method2fa}"</span> လုံခြုံရေး အရန်ကုဒ်များကို ဘေးကင်းရာသို့ ရွှေ့ပါ။
+                            </p>
+                        </div>
+
+                        <div class="space-y-2">
+                            <p class="text-[10px] text-slate-500 uppercase font-mono tracking-tighter underline">၃။ ရေရှည်ကာကွယ်ရေး အကြံပြုချက်</p>
+                            <div class="bg-slate-900 border border-slate-800 p-3 rounded-lg text-[10px] leading-relaxed text-slate-300">
+                                🛡️ <span class="font-bold text-teal-500">Encryption Status (${enc}):</span> 
+                                ${enc === 'No' ? '⚠️ သတိပေးချက်: စက်ပစ္စည်းများကို ချက်ချင်း Encrypt လုပ်ပါ။ iOS အတွက် Data Protection နှင့် Android အတွက် File-based Encryption ကို အမြဲဖွင့်ထားပါ။' : '✅ လက်ရှိ Encryption ကို ဆက်လက်ထိန်းသိမ်းပါ။'}
+                                <br><br>🔐 <span class="font-bold text-teal-500">2FA Method (${method2fa}):</span> 
+                                အဆိုပါစနစ်ကို ပိုမိုခိုင်မာစေရန် အကောင့်ဖွင့်စဉ် ရရှိလာသော အရေးပေါ်ပြန်လည်ရယူရေး ကုဒ်များ (Backup/Recovery codes) အား စက္ကူဖြင့် ရေးမှတ်သိမ်းဆည်းပါ။ SMS နည်းလမ်းကို ရွေးချယ်ပါက ဆင်းမ်ကတ်တူပွားတိုက်ခိုက်မှု (SIM Swap) ကို ကာကွယ်နိုင်ရန် Telecom Operator ထံတွင် SIM Lock ချထားပါ။
+                                <br><br>💡 <span class="font-bold text-teal-500">Field Advice:</span> အရေးကြီးဒေတာများကို 'Hidden Folders' များတွင်သာမထားဘဲ အမည်ပြောင်းထားသော dummy ဖိုင်များအဖြစ် သိမ်းဆည်းရန်နှင့် 'Dead-man switch' logic (မိမိအွန်လိုင်းမတက်နိုင်ပါက အလိုအလျောက် ပျက်သွားမည့်စနစ်) ကို အသုံးပြုရန် အကြံပြုပါသည်။
+                            </div>
+                        </div>
+                    </div>
+
+                    <button onclick="window.print()" class="w-full bg-slate-800 hover:bg-slate-700 text-[10px] py-2 rounded-lg border border-slate-700">
+                        <i class="fa-solid fa-print mr-2"></i> စီမံချက်ကို PDF အဖြစ်သိမ်းဆည်းမည်
+                    </button>
+                </div>
+            `;
+            pushAlert("ကိုယ်ပိုင်စီမံချက်ကို အောင်မြင်စွာ ထုတ်ယူလိုက်ပါပြီ။", "info");
         }
     </script>
-
 </body>
 </html>
